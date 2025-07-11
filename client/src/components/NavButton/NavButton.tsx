@@ -1,13 +1,22 @@
+import { CSSProperties } from "react";
 import "./NavButton.css";
 
-interface Props {
-  text: string;
+type Color = "red" | "blue" | "green"; // this called union
+
+type Props = {
+  children: React.ReactNode; 
+  style: CSSProperties;
 }
 
-const NavButton = ({ text }: Props) => {
+const NavButton = ({ children, style }: Props) => {
   return (
     <>
-      <button className="nav-button">{text}</button>
+      <button
+       className="nav-button"
+       style={style}
+       >
+        {children}
+      </button>
     </>
   );
 };
