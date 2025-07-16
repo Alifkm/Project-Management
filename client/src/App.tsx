@@ -1,6 +1,7 @@
 import { Children } from "react";
 import "./App.css";
 import NavButton from "./components/NavButton/NavButton";
+import ProjectList from "./pages/ProjectList";
 import { useState } from "react";
 
 function App() {
@@ -33,7 +34,7 @@ function App() {
           </NavButton>
         </div>
         <div className="col-span-4">
-          <button>test</button>
+          <ProjectList />
         </div>
       </div>
     </>
