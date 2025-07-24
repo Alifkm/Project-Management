@@ -2,7 +2,7 @@ import { Children } from "react";
 import "./App.css";
 import NavButton from "./components/NavButton/NavButton";
 import ProjectList from "./pages/ProjectList";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [count, setCount] = useState(0);

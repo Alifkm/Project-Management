@@ -21,9 +21,6 @@ namespace server.Models
         public string Assignee { get; set; }
 
         [Required(ErrorMessage = "{0} is required")]
-        public DateTime Updated { get; set; }
-
-        [Required(ErrorMessage = "{0} is required")]
         public DateTime Created_At { get; set; }
         public DateTime Updated_At { get; set; }
     }

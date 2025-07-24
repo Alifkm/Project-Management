@@ -1,45 +1,52 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "../App.css";
 
-const ProjectList = () => {
-  return (
-    <>
-        <table className="table-auto">
-          <thead>
-            <tr>
-              <th>Project Name</th>
-              <th>Status</th>
-              <th>Priority</th>
-              <th>Assignee</th>
-              <th>Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>AFI Kenaikan MOC 2025</td>
-              <td>In Progress</td>
-              <td>High</td>
-              <td>Alif</td>
-              <td>16/07/2025 01.00 PM</td>
-            </tr>
-            <tr>
-              <td>BRI Billing</td>
-              <td>Closed</td>
-              <td>Urgent</td>
-              <td>Alif</td>
-              <td>01/07/2025 05.00 PM</td>
-            </tr>
-            <tr>
-              <td>AFI Endorsemen Easy Health 2025</td>
-              <td>Testing</td>
-              <td>Normal</td>
-              <td>Alif</td>
-              <td>05/07/2025 09.00 AM</td>
-            </tr>
-          </tbody>
-        </table>
-    </>
-  );
+interface Project {
+  id: number;
+  name: string;
+  status: string;
+  priority: string;
+  assignee: string;
+  created_At: string;
+  updated_At: string;
 }
+
+const ProjectList = () => {
+   const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    fetch("https://localhost:7054/projects")
+      .then((res) => res.json())
+      .then((data: Project[]) => {
+        setProjects(data);
+        console.log(data);
+      });
+  }, []);
+
+  return (
+    <table className="table-auto w-full">
+      <thead>
+        <tr>
+          <th>Project Name</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Assignee</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {projects.map((project) => (
+          <tr key={project.id}>
+            <td>{project.name}</td>
+            <td>{project.priority}</td>
+            <td>{project.status}</td>
+            <td>{project.assignee}</td>
+            <td>{new Date(project.updated_At).toLocaleString()}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
 
 export default ProjectList;
