@@ -9,32 +9,34 @@ function App() {
 
   return (
     <>
-      <div className="grid grid-cols-5 w-screen h-screen">
-        <div className="bg-gray-50 flex flex-col">
-          <NavButton 
-            style={{
-              backgroundColor: "red"
-            }}
-          >
-            Project  
-          </NavButton> 
-          <NavButton 
-            style={{
-              backgroundColor: "blue"
-            }} 
-          >
-            Todo
-          </NavButton>
-          <NavButton 
-            style={{
-              backgroundColor: "green"
-            }}
-          >
-            User
-          </NavButton>
-        </div>
-        <div className="col-span-4">
-          <ProjectList />
+      <div className="w-screen h-screen overflow-hidden m-0 p-0">
+        <div className="grid grid-cols-5 h-full">
+          <div className="bg-gray-50 flex flex-col">
+            <NavButton
+              style={{
+                backgroundColor: "red",
+              }}
+            >
+              Project
+            </NavButton>
+            <NavButton
+              style={{
+                backgroundColor: "blue",
+              }}
+            >
+              Todo
+            </NavButton>
+            <NavButton
+              style={{
+                backgroundColor: "green",
+              }}
+            >
+              User
+            </NavButton>
+          </div>
+          <div className="col-span-4 bg-cyan-900 flex content-center justify-center">
+            <ProjectList />
+          </div>
         </div>
       </div>
     </>
