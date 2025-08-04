@@ -25,5 +25,12 @@ namespace server.Controllers
             var projects = await _context.Projects.ToListAsync();
             return Ok(projects);
         }
+
+        [Route("projects/{keyword}")]
+        public async Task<IActionResult> SearchProject(string keyword)
+        {
+            var projects = await _context.Projects.Where(p => p.Name.Contains(keyword)).ToListAsync();
+            return Ok(projects);
+        }
     }
 }

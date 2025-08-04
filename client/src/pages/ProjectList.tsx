@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../App.css";
 import Button from "../components/Button/Button";
 import Modal from "../components/Modal/Modal";
@@ -27,9 +27,13 @@ const ProjectList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isServerError, setIsServerError] = useState(false);
   const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
+  const [projectKeyword, setProjectKeyword] = useState("");
+  const [apiEndpoint, setApiEndpoint] = useState(
+    "https://localhost:7054/projects"
+  );
 
   useEffect(() => {
-    fetch("https://localhost:7054/projects")
+    fetch(apiEndpoint)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Server Error");
@@ -42,14 +46,14 @@ const ProjectList = () => {
       .catch((error) => {
         setIsServerError(true);
       });
-  }, []);
+  }, [apiEndpoint]);
 
   if (isServerError) {
     return <ServerError />;
   }
 
   return (
-    <div className="w-11/12 h-11/12 my-auto bg-gray-500 rounded-xl">
+    <div className="relative w-11/12 h-11/12 my-auto bg-gray-500 rounded-xl">
       <div className="flex flex-col m-5">
         <div className="flex justify-between mb-5">
           <h2 className="text-4xl">Project List</h2>
@@ -69,10 +73,24 @@ const ProjectList = () => {
               type="text"
               placeholder="Search Project..."
               className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={projectKeyword}
+              onChange={(e) => setProjectKeyword(e.target.value)}
             />
           </div>
-          <Button text="apply" background="bg-blue-400" />
-          <Button text="clear" background="bg-red-500" />
+          <Button
+            text="apply"
+            background="bg-blue-400"
+            onClick={() =>
+              setApiEndpoint(
+                `https://localhost:7054/projects/${projectKeyword}`
+              )
+            }
+          />
+          <Button
+            text="clear"
+            background="bg-red-500"
+            onClick={() => setApiEndpoint(`https://localhost:7054/projects/`)}
+          />
         </div>
       </div>
 
@@ -114,7 +132,11 @@ const ProjectList = () => {
         </tbody>
       </table>
 
-      <Modal isOpen={isAddNewProjectShown} />
+      {isAddNewProjectShown && (
+        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg shadow-xl bg-transparent">
+          <Modal isOpen={isAddNewProjectShown} title="Add New Project" />
+        </div>
+      )}
     </div>
   );
 };

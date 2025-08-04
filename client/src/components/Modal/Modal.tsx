@@ -9,8 +9,14 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="w-50 h-1/2 rounded-xl bg-cyan-700">
-      <input type="text" placeholder="project name" />
+    <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">{title}</h2>
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
+          &times;
+        </button>
+      </div>
+      <div>{children}</div>
     </div>
   );
 };
