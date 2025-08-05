@@ -3,6 +3,7 @@ import "./App.css";
 import NavButton from "./components/NavButton/NavButton";
 import ProjectList from "./pages/ProjectList";
 import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -35,7 +36,10 @@ function App() {
             </NavButton>
           </div>
           <div className="col-span-4 bg-cyan-900 flex content-center justify-center">
-            <ProjectList />
+            <Routes>
+              <Route path="/" element={<ProjectList />} />
+              <Route path="/projects" element={<ProjectList />} />
+            </Routes>
           </div>
         </div>
       </div>

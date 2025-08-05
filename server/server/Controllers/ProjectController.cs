@@ -18,19 +18,34 @@ namespace server.Controllers
             return View();
         }
 
+        [Route("/")]
         [Route("projects")]
         [HttpGet]
-        public async Task<IActionResult> GetProjects()
+        public async Task<IActionResult> GetProjects([FromQuery] string? keyword)
         {
-            var projects = await _context.Projects.ToListAsync();
-            return Ok(projects);
+            if(!string.IsNullOrEmpty(keyword))
+            {
+                var filteredProjects = await _context.Projects.Where(key => key.Name.Contains(keyword)).ToListAsync();
+                return Ok(filteredProjects);
+            }
+
+            var allProjects = await _context.Projects.ToListAsync();
+            return Ok(allProjects);
         }
 
-        [Route("projects/{keyword}")]
-        public async Task<IActionResult> SearchProject(string keyword)
-        {
-            var projects = await _context.Projects.Where(p => p.Name.Contains(keyword)).ToListAsync();
-            return Ok(projects);
-        }
+
+        //public async Task<IActionResult> GetProjects()
+        //{
+        //    var projects = await _context.Projects.ToListAsync();
+        //    return Ok(projects);
+        //}
+
+        //[Route("projects/{keyword}")]
+        //[HttpGet]
+        //public async Task<IActionResult> SearchProject(string keyword)
+        //{
+        //    var projects = await _context.Projects.Where(p => p.Name.Contains(keyword)).ToListAsync();
+        //    return Ok(projects);
+        //}
     }
 }

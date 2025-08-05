@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faDeleteLeft } from "@fortawesome/free-solid-svg-icons/faDeleteLeft";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface Project {
   id: number;
@@ -27,26 +28,42 @@ const ProjectList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isServerError, setIsServerError] = useState(false);
   const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
-  const [projectKeyword, setProjectKeyword] = useState("");
-  const [apiEndpoint, setApiEndpoint] = useState(
-    "https://localhost:7054/projects"
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const keyword = searchParams.get("keyword") || "";
+  const [projectKeyword, setProjectKeyword] = useState(keyword);
 
+     // Fetch projects when keyword in URL changes
   useEffect(() => {
-    fetch(apiEndpoint)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Server Error");
-        }
-        return res.json();
-      })
-      .then((data: Project[]) => {
-        setProjects(data);
-      })
-      .catch((error) => {
-        setIsServerError(true);
-      });
-  }, [apiEndpoint]);
+  const fetchProjects = async () => {
+    try {
+      const url = keyword
+        ? `https://localhost:7054/projects?keyword=${keyword}`
+        : `https://localhost:7054/projects`;
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Server error");
+      const data = await response.json();
+      setProjects(data);
+    } catch (error) {
+      setIsServerError(true);
+    }
+  };
+
+  fetchProjects();
+}, [keyword]);
+
+  const handleApplyClick = () => {
+    if (projectKeyword) {
+      setSearchParams({ keyword: projectKeyword });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  const handleClearSearchClick = () => {
+    setSearchParams("");
+    setProjectKeyword("");
+  }
 
   if (isServerError) {
     return <ServerError />;
@@ -75,21 +92,22 @@ const ProjectList = () => {
               className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={projectKeyword}
               onChange={(e) => setProjectKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if(e.key === "Enter") {
+                  handleApplyClick();
+                }
+              }}
             />
           </div>
           <Button
             text="apply"
             background="bg-blue-400"
-            onClick={() =>
-              setApiEndpoint(
-                `https://localhost:7054/projects/${projectKeyword}`
-              )
-            }
+            onClick={handleApplyClick}
           />
           <Button
             text="clear"
             background="bg-red-500"
-            onClick={() => setApiEndpoint(`https://localhost:7054/projects/`)}
+            onClick={handleClearSearchClick}
           />
         </div>
       </div>
@@ -106,7 +124,7 @@ const ProjectList = () => {
           </tr>
         </thead>
         <tbody className="bg-cyan-600 py-20">
-          {projects.map((project) => (
+          {projects.length > 0 ? projects.map((project) => (
             <tr key={project.id}>
               <td className="py-2">{project.name}</td>
               <td className="py-2">{project.priority}</td>
@@ -124,11 +142,16 @@ const ProjectList = () => {
                   icon={faTrash}
                   className="cursor-pointer text-red-500 hover:bg-red-300 py-1 rounded-xs mx-1"
                 />
-                {/* <Button text="Update" />
-                <Button text="Delete" /> */}
               </td>
             </tr>
-          ))}
+          ))
+          :
+          (
+            <tr className="col-span-6">
+              <td>There is no data found based on keyword</td>
+            </tr>
+          )
+        }
         </tbody>
       </table>
 
