@@ -33,7 +33,13 @@ namespace server.Controllers
             return Ok(allProjects);
         }
 
-
+        [HttpPost]
+        public async Task<IActionResult> CreateProject([FromBody] Project project)
+        {
+            _context.Projects.Add(project);
+            await _context.SaveChangesAsync();
+            return Ok(project);
+        }
         //public async Task<IActionResult> GetProjects()
         //{
         //    var projects = await _context.Projects.ToListAsync();

@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faDeleteLeft } from "@fortawesome/free-solid-svg-icons/faDeleteLeft";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Route, useLocation } from "react-router-dom";
 
 interface Project {
   id: number;
@@ -27,12 +27,21 @@ interface Project {
 const ProjectList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isServerError, setIsServerError] = useState(false);
-  const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
+  // const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
   const [projectKeyword, setProjectKeyword] = useState(keyword);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isAddNewProjectShown = location.pathname === "/projects/create";
 
-     // Fetch projects when keyword in URL changes
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState("new");
+  const [priority, setPriority] = useState("");
+  const [assignee, setAssignee] = useState("");
+
+
+  // Fetch projects when keyword in URL changes
   useEffect(() => {
   const fetchProjects = async () => {
     try {
@@ -65,6 +74,33 @@ const ProjectList = () => {
     setProjectKeyword("");
   }
 
+  const handleCreateProject = async () => {
+    const newProject = {
+      name,
+      status,
+      assignee,
+      priority,
+      created_At: new Date(),
+      updated_At: new Date()
+    }
+
+    try {
+      const response = await fetch("https:/localhost:7054/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProject),
+      });
+
+      if(!response.ok) throw new Error("Failed to create new project");
+
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   if (isServerError) {
     return <ServerError />;
   }
@@ -77,7 +113,10 @@ const ProjectList = () => {
           <Button
             text="Add New Project"
             background="bg-blue-400"
-            onClick={() => setAddNewProjectShown(true)}
+            onClick={() => {
+              // setAddNewProjectShown(true)
+              navigate("/projects/create")
+            }}
           />
         </div>
         <div className="flex justify-start gap-x-2 py-4">
@@ -156,8 +195,52 @@ const ProjectList = () => {
       </table>
 
       {isAddNewProjectShown && (
-        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg shadow-xl bg-transparent">
-          <Modal isOpen={isAddNewProjectShown} title="Add New Project" />
+        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg bg-transparent">
+          <Modal
+            isOpen={true}
+            title="Add New Project"
+            onClose={() => navigate("/projects")}
+          >
+            <form action="" method="POST" className="flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Project name..."
+                className="border-2 border-gray-400 rounded-xl p-2"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <select 
+                name="priority" 
+                id="priority" 
+                className="border-2 border-gray-400 rounded-xl p-2"
+                value={priority}
+                onChange={(e) => setName(e.target.value)}>
+                  <option value="Urgent">Urgent</option>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              <select 
+                name="status" 
+                id="status" 
+                className="border-2 border-gray-400 rounded-xl p-2"
+                value={status}
+                onChange={(e) => setName(e.target.value)}>
+                  <option value="Not Started">Not Started</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              <select 
+                name="assignee" 
+                id="assignee" 
+                className="border-2 border-gray-400 rounded-xl p-2"
+                value={assignee}
+                onChange={(e) => setName(e.target.value)}>
+                  <option value="Alif">Alif</option>
+                </select>
+              <button type="submit" onSubmit={handleCreateProject} className="border-2 rounded-xl">submit</button>
+            </form>
+          </Modal>
         </div>
       )}
     </div>
@@ -177,3 +260,16 @@ const ServerError = () => {
 };
 
 export default ProjectList;
+
+      {/* {isAddNewProjectShown && (
+        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg bg-transparent">
+          <Modal isOpen={isAddNewProjectShown} title="Add New Project">
+            <form action="" method="post" className="flex flex-col gap-4">
+              <input type="text" placeholder="Project name..." className="border-2 border-gray-400 rounded-xl p-2"/>
+              <select name="priority" id="priority" className="border-2 border-gray-400 rounded-xl p-2"></select>
+              <select name="status" id="status" className="border-2 border-gray-400 rounded-xl p-2"></select>
+              <select name="assignee" id="assignee" className="border-2 border-gray-400 rounded-xl p-2"></select>
+            </form>
+          </Modal>
+        </div>
+      )} */}

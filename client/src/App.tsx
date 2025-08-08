@@ -15,21 +15,24 @@ function App() {
           <div className="bg-gray-50 flex flex-col">
             <NavButton
               style={{
-                backgroundColor: "red",
+                backgroundColor: "gray",
+                color: "black"
               }}
             >
               Project
             </NavButton>
             <NavButton
               style={{
-                backgroundColor: "blue",
+                backgroundColor: "gray",
+                color: "black"
               }}
             >
               Todo
             </NavButton>
             <NavButton
               style={{
-                backgroundColor: "green",
+                backgroundColor: "gray",
+                color: "black"
               }}
             >
               User
@@ -39,6 +42,7 @@ function App() {
             <Routes>
               <Route path="/" element={<ProjectList />} />
               <Route path="/projects" element={<ProjectList />} />
+              <Route path="/projects/create" element={<ProjectList />} />
             </Routes>
           </div>
         </div>
