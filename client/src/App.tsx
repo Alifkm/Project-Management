@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 
 function App() {
   const [count, setCount] = useState(0);
+  const [isActive, setIsActive] = useState(false);
 
   return (
     <>
@@ -17,9 +18,9 @@ function App() {
       <div className="w-screen h-screen overflow-hidden m-0 p-0">
         <div className="grid grid-cols-5 h-full">
           <div className="bg-gray-50 flex flex-col">
+            <h2 className="text-[#3F4355] text-xl font-bold mx-auto py-5">Project Management</h2>
             <NavButton
               style={{
-                backgroundColor: "gray",
                 color: "black",
               }}
             >
@@ -27,7 +28,6 @@ function App() {
             </NavButton>
             <NavButton
               style={{
-                backgroundColor: "gray",
                 color: "black",
               }}
             >
@@ -35,7 +35,6 @@ function App() {
             </NavButton>
             <NavButton
               style={{
-                backgroundColor: "gray",
                 color: "black",
               }}
             >

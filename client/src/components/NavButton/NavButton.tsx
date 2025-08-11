@@ -14,10 +14,11 @@ type Props = {
 const NavButton = ({ children, style }: Props) => {
   return (
     <>
-      <div className="flex justify-around align-center">
-        <FontAwesomeIcon
+      <div className="flex justify-center items-center text-[#3F4355]">
+       <div className="hover:cursor-pointer">
+         <FontAwesomeIcon
           icon={faFlag}
-          className="cursor-pointer hover:bg-gray-400 rounded-xs mx-1 bg-red-200"
+          className="cursor-pointer rounded-xs mx-1"
         />
         <button
         className="nav-button rounded-xl"
@@ -25,6 +26,7 @@ const NavButton = ({ children, style }: Props) => {
         >
           {children}
         </button>
+       </div>
       </div>
     </>
   );
