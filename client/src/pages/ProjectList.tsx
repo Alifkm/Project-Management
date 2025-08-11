@@ -12,7 +12,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faDeleteLeft } from "@fortawesome/free-solid-svg-icons/faDeleteLeft";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
-import { useNavigate, useSearchParams, Route, useLocation } from "react-router-dom";
+import {
+  useNavigate,
+  useSearchParams,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import toast from "react-hot-toast";
 
 interface Project {
   id: number;
@@ -40,26 +46,25 @@ const ProjectList = () => {
   const [priority, setPriority] = useState("");
   const [assignee, setAssignee] = useState("");
 
-
   // Fetch projects when keyword in URL changes
   useEffect(() => {
-  const fetchProjects = async () => {
-    try {
-      const url = keyword
-        ? `https://localhost:7054/projects?keyword=${keyword}`
-        : `https://localhost:7054/projects`;
+    const fetchProjects = async () => {
+      try {
+        const url = keyword
+          ? `https://localhost:7054/projects?keyword=${keyword}`
+          : `https://localhost:7054/projects`;
 
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Server error");
-      const data = await response.json();
-      setProjects(data);
-    } catch (error) {
-      setIsServerError(true);
-    }
-  };
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Server error");
+        const data = await response.json();
+        setProjects(data);
+      } catch (error) {
+        setIsServerError(true);
+      }
+    };
 
-  fetchProjects();
-}, [keyword]);
+    fetchProjects();
+  }, [keyword, location.pathname]);
 
   const handleApplyClick = () => {
     if (projectKeyword) {
@@ -72,20 +77,22 @@ const ProjectList = () => {
   const handleClearSearchClick = () => {
     setSearchParams("");
     setProjectKeyword("");
-  }
+  };
 
-  const handleCreateProject = async () => {
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     const newProject = {
       name,
       status,
       assignee,
       priority,
       created_At: new Date(),
-      updated_At: new Date()
-    }
+      updated_At: new Date(),
+    };
 
     try {
-      const response = await fetch("https:/localhost:7054/projects", {
+      const response = await fetch("https://localhost:7054/projects/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,29 +100,53 @@ const ProjectList = () => {
         body: JSON.stringify(newProject),
       });
 
-      if(!response.ok) throw new Error("Failed to create new project");
+      if (!response.ok) throw new Error("Failed to create new project");
 
-      
+      toast.success("Success add new project");
+      navigate("/projects");
     } catch (error) {
-      console.log(error);
+      toast.error("Error add new project");
     }
-  }
+  };
+
+  const handleDeleteClick = async (id: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(
+        `https://localhost:7054/projects/${id}/delete`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to delete project");
+      toast.success("Project deleted successfully!");
+      navigate("/projects");
+    } catch (error) {
+      toast.error("Error delete project");
+    }
+  };
 
   if (isServerError) {
     return <ServerError />;
   }
 
   return (
-    <div className="relative w-11/12 h-11/12 my-auto bg-gray-500 rounded-xl">
+    <div className="relative w-11/12 h-11/12 my-auto bg-white rounded-xl text-[#3F4355]">
       <div className="flex flex-col m-5">
         <div className="flex justify-between mb-5">
           <h2 className="text-4xl">Project List</h2>
           <Button
             text="Add New Project"
-            background="bg-blue-400"
+            background="bg-[#1464D0]"
+            textColor="text-white"
             onClick={() => {
               // setAddNewProjectShown(true)
-              navigate("/projects/create")
+              navigate("/projects/create");
             }}
           />
         </div>
@@ -132,7 +163,7 @@ const ProjectList = () => {
               value={projectKeyword}
               onChange={(e) => setProjectKeyword(e.target.value)}
               onKeyDown={(e) => {
-                if(e.key === "Enter") {
+                if (e.key === "Enter") {
                   handleApplyClick();
                 }
               }}
@@ -140,19 +171,21 @@ const ProjectList = () => {
           </div>
           <Button
             text="apply"
-            background="bg-blue-400"
+            background="bg-[#1464D0]"
+            textColor="text-white"
             onClick={handleApplyClick}
           />
           <Button
             text="clear"
             background="bg-red-500"
+            textColor="text-white"
             onClick={handleClearSearchClick}
           />
         </div>
       </div>
 
       <table className="table-auto w-full text-center mt-5">
-        <thead className="bg-cyan-300 border-2">
+        <thead className="border-b-2">
           <tr>
             <th>Project Name</th>
             <th>Priority</th>
@@ -162,46 +195,51 @@ const ProjectList = () => {
             <th>Action</th>
           </tr>
         </thead>
-        <tbody className="bg-cyan-600 py-20">
-          {projects.length > 0 ? projects.map((project) => (
-            <tr key={project.id}>
-              <td className="py-2">{project.name}</td>
-              <td className="py-2">{project.priority}</td>
-              <td className="py-2">{project.status}</td>
-              <td className="py-2">{project.assignee}</td>
-              <td className="py-2">
-                {new Date(project.updated_At).toLocaleString()}
-              </td>
-              <td className="gap-x-5 py-2">
-                <FontAwesomeIcon
-                  icon={faEdit}
-                  className="cursor-pointer hover:bg-gray-400 py-1 rounded-xs mx-1"
-                />
-                <FontAwesomeIcon
-                  icon={faTrash}
-                  className="cursor-pointer text-red-500 hover:bg-red-300 py-1 rounded-xs mx-1"
-                />
-              </td>
-            </tr>
-          ))
-          :
-          (
+        <tbody className="py-20">
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <tr key={project.id}>
+                <td className="py-2">{project.name}</td>
+                <td className="py-2">{project.priority}</td>
+                <td className="py-2">{project.status}</td>
+                <td className="py-2">{project.assignee}</td>
+                <td className="py-2">
+                  {new Date(project.updated_At).toLocaleString()}
+                </td>
+                <td className="gap-x-5 py-2">
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className="cursor-pointer hover:bg-gray-400 py-1 rounded-xs mx-1"
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="cursor-pointer text-red-500 hover:bg-red-300 py-1 rounded-xs mx-1"
+                    onClick={() => handleDeleteClick(project.id)}
+                  />
+                </td>
+              </tr>
+            ))
+          ) : (
             <tr className="col-span-6">
               <td>There is no data found based on keyword</td>
             </tr>
-          )
-        }
+          )}
         </tbody>
       </table>
 
       {isAddNewProjectShown && (
-        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg bg-transparent">
+        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg bg-gray-200">
           <Modal
             isOpen={true}
             title="Add New Project"
             onClose={() => navigate("/projects")}
           >
-            <form action="" method="POST" className="flex flex-col gap-4">
+            <form
+              action=""
+              method="POST"
+              className="flex flex-col gap-4"
+              onSubmit={handleCreateProject}
+            >
               <input
                 type="text"
                 placeholder="Project name..."
@@ -209,36 +247,44 @@ const ProjectList = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-              <select 
-                name="priority" 
-                id="priority" 
+              <select
+                name="priority"
+                id="priority"
                 className="border-2 border-gray-400 rounded-xl p-2"
                 value={priority}
-                onChange={(e) => setName(e.target.value)}>
-                  <option value="Urgent">Urgent</option>
-                  <option value="High">High</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Low">Low</option>
-                </select>
-              <select 
-                name="status" 
-                id="status" 
+                onChange={(e) => setPriority(e.target.value)}
+              >
+                <option value="Urgent">Urgent</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+              <select
+                name="status"
+                id="status"
                 className="border-2 border-gray-400 rounded-xl p-2"
                 value={status}
-                onChange={(e) => setName(e.target.value)}>
-                  <option value="Not Started">Not Started</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
-                </select>
-              <select 
-                name="assignee" 
-                id="assignee" 
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+              <select
+                name="assignee"
+                id="assignee"
                 className="border-2 border-gray-400 rounded-xl p-2"
                 value={assignee}
-                onChange={(e) => setName(e.target.value)}>
-                  <option value="Alif">Alif</option>
-                </select>
-              <button type="submit" onSubmit={handleCreateProject} className="border-2 rounded-xl">submit</button>
+                onChange={(e) => setAssignee(e.target.value)}
+              >
+                <option value="Alif">Alif</option>
+              </select>
+              <button
+                type="submit"
+                className="border-2 rounded-xl hover:cursor-pointer hover:bg-amber-200"
+              >
+                submit
+              </button>
             </form>
           </Modal>
         </div>
@@ -261,7 +307,8 @@ const ServerError = () => {
 
 export default ProjectList;
 
-      {/* {isAddNewProjectShown && (
+{
+  /* {isAddNewProjectShown && (
         <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg bg-transparent">
           <Modal isOpen={isAddNewProjectShown} title="Add New Project">
             <form action="" method="post" className="flex flex-col gap-4">
@@ -272,4 +319,5 @@ export default ProjectList;
             </form>
           </Modal>
         </div>
-      )} */}
+      )} */
+}

@@ -33,6 +33,7 @@ namespace server.Controllers
             return Ok(allProjects);
         }
 
+        [Route("projects/create")]
         [HttpPost]
         public async Task<IActionResult> CreateProject([FromBody] Project project)
         {
@@ -40,18 +41,19 @@ namespace server.Controllers
             await _context.SaveChangesAsync();
             return Ok(project);
         }
-        //public async Task<IActionResult> GetProjects()
-        //{
-        //    var projects = await _context.Projects.ToListAsync();
-        //    return Ok(projects);
-        //}
 
-        //[Route("projects/{keyword}")]
-        //[HttpGet]
-        //public async Task<IActionResult> SearchProject(string keyword)
-        //{
-        //    var projects = await _context.Projects.Where(p => p.Name.Contains(keyword)).ToListAsync();
-        //    return Ok(projects);
-        //}
+        [HttpDelete("projects/{id}/delete")]
+        public async Task<IActionResult> DeleteProject(int id)
+        {
+            var project = await _context.Projects.FindAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
