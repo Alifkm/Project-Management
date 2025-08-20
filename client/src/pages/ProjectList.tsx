@@ -17,6 +17,7 @@ import {
   useSearchParams,
   Route,
   useLocation,
+  useParams
 } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -40,11 +41,22 @@ const ProjectList = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isAddNewProjectShown = location.pathname === "/projects/create";
+  const {id} = useParams();
+  const isEditProjectShown = location.pathname.endsWith("/edit");
 
   const [name, setName] = useState("");
-  const [status, setStatus] = useState("new");
+  const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [assignee, setAssignee] = useState("");
+
+  const projectToEdit = projects.find((p) => p.id === Number(id));
+
+  const [formData, setFormData] = useState({
+    name: projectToEdit?.name || "",
+    status: projectToEdit?.status || "",
+    priority: projectToEdit?.priority || "",
+    assignee: projectToEdit?.assignee || "",
+  })
 
   // Fetch projects when keyword in URL changes
   useEffect(() => {
@@ -131,11 +143,24 @@ const ProjectList = () => {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData(
+      {...formData, [e.target.name]: e.target.value });
+  }
+
+  const handleSubmitEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProjects((prev) =>
+      prev.map((p) => (p.id === Number(id) ? {...p, ...formData} : p))
+    );
+  };
+
   if (isServerError) {
     return <ServerError />;
   }
 
   return (
+    
     <div className="relative w-11/12 h-11/12 my-auto bg-white rounded-xl text-[#3F4355]">
       <div className="flex flex-col m-5">
         <div className="flex justify-between mb-5">
@@ -184,6 +209,8 @@ const ProjectList = () => {
         </div>
       </div>
 
+      
+
       <table className="table-auto w-full text-center mt-5">
         <thead className="border-b-2">
           <tr>
@@ -210,6 +237,7 @@ const ProjectList = () => {
                   <FontAwesomeIcon
                     icon={faEdit}
                     className="cursor-pointer hover:bg-gray-400 py-1 rounded-xs mx-1"
+                    onClick={() => navigate(`/projects/${project.id}/edit`)}
                   />
                   <FontAwesomeIcon
                     icon={faTrash}
@@ -226,8 +254,11 @@ const ProjectList = () => {
           )}
         </tbody>
       </table>
+      
+      
 
-      {isAddNewProjectShown && (
+
+      {isEditProjectShown && (
         <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg bg-gray-200">
           <Modal
             isOpen={true}
@@ -237,6 +268,74 @@ const ProjectList = () => {
             <form
               action=""
               method="POST"
+              className="flex flex-col gap-4"
+              onSubmit={handleSubmitEdit}
+            >
+              <input
+                type="text"
+                placeholder="Project name..."
+                className="border-2 border-gray-400 rounded-xl p-2"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              <select
+                name="priority"
+                id="priority"
+                className="border-2 border-gray-400 rounded-xl p-2"
+                value={formData.priority}
+                onChange={handleChange}
+              >
+                <option value="" disabled>Pick priority...</option>
+                <option value="Urgent">Urgent</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+              <select
+                name="status"
+                id="status"
+                className="border-2 border-gray-400 rounded-xl p-2"
+                value={formData.status}
+                onChange={handleChange}
+              >
+                <option value="" disabled>Pick status...</option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+              <select
+                name="assignee"
+                id="assignee"
+                className="border-2 border-gray-400 rounded-xl p-2"
+                value={formData.assignee}
+                onChange={handleChange}
+              >
+                <option value="" disabled>Pick assignee...</option>
+                <option value="Alif">Alif</option>
+                <option value="Devy">Devy</option>
+              </select>
+              <button
+                type="submit"
+                className="border-2 rounded-xl hover:cursor-pointer hover:bg-amber-200"
+              >
+                submit
+              </button>
+            </form>
+          </Modal>
+        </div>
+      )}
+
+      {isAddNewProjectShown && (
+        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 
+                w-full max-w-md p-6 rounded-lg bg-white shadow-lg">
+          <Modal
+            isOpen={true}
+            title="Add New Project"
+            onClose={() => navigate("/projects")}
+          >
+            <form
+              action=""
+              method="PUT"
               className="flex flex-col gap-4"
               onSubmit={handleCreateProject}
             >
@@ -254,6 +353,7 @@ const ProjectList = () => {
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
               >
+                <option value="" disabled>Pick priority...</option>
                 <option value="Urgent">Urgent</option>
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
@@ -266,6 +366,7 @@ const ProjectList = () => {
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
+                <option value="" disabled>Pick status...</option>
                 <option value="Not Started">Not Started</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Completed">Completed</option>
@@ -277,7 +378,9 @@ const ProjectList = () => {
                 value={assignee}
                 onChange={(e) => setAssignee(e.target.value)}
               >
+                <option value="" disabled>Pick assignee...</option>
                 <option value="Alif">Alif</option>
+                <option value="Devy">Devy</option>
               </select>
               <button
                 type="submit"

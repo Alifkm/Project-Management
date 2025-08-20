@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 function App() {
   const [count, setCount] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const [isModalAppeared, setModalAppeared] = useState(false);
 
   return (
     <>
@@ -46,6 +47,7 @@ function App() {
               <Route path="/" element={<ProjectList />} />
               <Route path="/projects" element={<ProjectList />} />
               <Route path="/projects/create" element={<ProjectList />} />
+              <Route path="/projects/:id/edit" element={<ProjectList />} />
             </Routes>
           </div>
         </div>
