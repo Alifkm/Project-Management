@@ -148,12 +148,59 @@ const ProjectList = () => {
       {...formData, [e.target.name]: e.target.value });
   }
 
-  const handleSubmitEdit = (e: React.FormEvent) => {
+  const handleSubmitEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setProjects((prev) =>
-      prev.map((p) => (p.id === Number(id) ? {...p, ...formData} : p))
-    );
+
+    const editProject = {
+      id: Number(id),
+      name: formData.name,
+      status: formData.status,
+      assignee: formData.assignee,
+      priority: formData.priority,
+    };
+
+    try {
+      const response = await fetch(`https://localhost:7054/projects/${id}/update`,
+       {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editProject),
+       }
+      ) 
+      
+       if (!response.ok) throw new Error("Failed to update project");
+
+      toast.success("Success update project");
+      navigate("/projects");
+    } catch (error) {
+      toast.error("Error update project");
+    }
+
   };
+
+  const openEditModal = async (id: Number) => {
+    try {
+      const url = `https://localhost:7054/projects/${id}/edit`;
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Server error while getting data by id");
+      const data = await response.json();
+
+      navigate(`/projects/${id}/edit`)
+      setFormData( {
+        name: data.name,
+        status: data.status,
+        assignee: data.assignee,
+        priority: data.priority
+      });
+      
+    }
+    catch {
+      setIsServerError(true);
+    }
+  }
 
   if (isServerError) {
     return <ServerError />;
@@ -237,7 +284,8 @@ const ProjectList = () => {
                   <FontAwesomeIcon
                     icon={faEdit}
                     className="cursor-pointer hover:bg-gray-400 py-1 rounded-xs mx-1"
-                    onClick={() => navigate(`/projects/${project.id}/edit`)}
+                    // onClick={() => navigate(`/projects/${project.id}/edit`)}
+                    onClick={() => openEditModal(project.id)}
                   />
                   <FontAwesomeIcon
                     icon={faTrash}
@@ -259,7 +307,8 @@ const ProjectList = () => {
 
 
       {isEditProjectShown && (
-        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg bg-gray-200">
+        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 
+                w-full max-w-md p-6 rounded-lg bg-white shadow-lg">
           <Modal
             isOpen={true}
             title="Add New Project"
@@ -273,6 +322,7 @@ const ProjectList = () => {
             >
               <input
                 type="text"
+                name="name"
                 placeholder="Project name..."
                 className="border-2 border-gray-400 rounded-xl p-2"
                 value={formData.name}
@@ -380,7 +430,6 @@ const ProjectList = () => {
               >
                 <option value="" disabled>Pick assignee...</option>
                 <option value="Alif">Alif</option>
-                <option value="Devy">Devy</option>
               </select>
               <button
                 type="submit"

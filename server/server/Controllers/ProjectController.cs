@@ -42,6 +42,40 @@ namespace server.Controllers
             return Ok(project);
         }
 
+        [Route("projects/{id}/edit")]
+        [HttpGet]
+        public async Task<IActionResult> EditProject(int id)
+        {
+            var project = await _context.Projects.FindAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(project);
+        }
+
+        [Route("projects/{id}/update")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateProject(int id, [FromBody] Project project)
+        {
+            var existingProject = await _context.Projects.FindAsync(id);
+
+            if (id != project.Id)
+            {
+                return BadRequest();
+            }
+
+            existingProject.Name = project.Name;
+            existingProject.Status = project.Status;
+            existingProject.Assignee = project.Assignee;
+            existingProject.Priority = project.Priority;
+            existingProject.Updated_At = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return Ok(existingProject);
+        }
+
         [HttpDelete("projects/{id}/delete")]
         public async Task<IActionResult> DeleteProject(int id)
         {
