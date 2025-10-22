@@ -79,9 +79,10 @@
               "RelativeDocumentMoniker": "server\\Program.cs",
               "ToolTip": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Program.cs",
               "RelativeToolTip": "server\\Program.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAAACkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABcAAAAAAAAAAAArwDMAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-22T03:17:25.964Z"
+              "WhenOpened": "2025-07-22T03:17:25.964Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -115,7 +116,7 @@
               "RelativeDocumentMoniker": "server\\Controllers\\ProjectController.cs",
               "ToolTip": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Controllers\\ProjectController.cs",
               "RelativeToolTip": "server\\Controllers\\ProjectController.cs",
-              "ViewState": "AgIAACQAAAAAAAAAAAAwwEoAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAUwDsAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-16T09:56:24.777Z",
               "EditorCaption": ""

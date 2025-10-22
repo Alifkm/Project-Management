@@ -55,6 +55,11 @@ namespace server.Controllers
             return Ok(project);
         }
 
+        public async Task<IActionResult> OrderProject()
+        {
+            
+        }
+
         [Route("projects/{id}/update")]
         [HttpPut]
         public async Task<IActionResult> UpdateProject(int id, [FromBody] Project project)
@@ -89,5 +94,7 @@ namespace server.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+
     }
 }

@@ -20,6 +20,7 @@ import {
   useParams
 } from "react-router-dom";
 import toast from "react-hot-toast";
+import { faSortDown } from "@fortawesome/free-solid-svg-icons/faSortDown";
 
 interface Project {
   id: number;
@@ -202,6 +203,14 @@ const ProjectList = () => {
     }
   }
 
+  const OrderBy = async (column: String) => {
+    // try {
+    //   const url = 
+    // } catch (error) {
+      
+    // }
+  }
+
   if (isServerError) {
     return <ServerError />;
   }
@@ -256,12 +265,20 @@ const ProjectList = () => {
         </div>
       </div>
 
-      
-
       <table className="table-auto w-full text-center mt-5">
         <thead className="border-b-2">
           <tr>
-            <th>Project Name</th>
+            <div 
+              className="flex bg-amber-400 justify-evenly cursor-pointer"
+              onClick={() => OrderBy("Project")}
+            >
+              <th>Project Name </th>
+              <FontAwesomeIcon
+              icon={faSortDown}
+              className="invisible"
+              />
+            </div>
+            
             <th>Priority</th>
             <th>Status</th>
             <th>Assignee</th>
