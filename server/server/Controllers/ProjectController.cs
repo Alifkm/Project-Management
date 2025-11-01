@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using server.Context;
 using server.Models;
+using System.Linq.Expressions;
 
 namespace server.Controllers
 {
@@ -21,12 +23,40 @@ namespace server.Controllers
         [Route("/")]
         [Route("projects")]
         [HttpGet]
-        public async Task<IActionResult> GetProjects([FromQuery] string? keyword)
+        public async Task<IActionResult> GetProjects([FromQuery] string? keyword, [FromQuery] string? orderBy)
         {
-            if(!string.IsNullOrEmpty(keyword))
+            var filteredProjects =  _context.Projects.AsQueryable();
+
+            var selectors = new Dictionary<string, Expression<Func<Project, object>>>()
             {
-                var filteredProjects = await _context.Projects.Where(key => key.Name.Contains(keyword)).ToListAsync();
-                return Ok(filteredProjects);
+                { "name", p => p.Name },
+                { "status", p => p.Status },
+                { "assignee", p => p.Assignee },
+                { "priority", p => p.Priority }
+            };
+
+            if (!string.IsNullOrEmpty(keyword) || !string.IsNullOrEmpty(orderBy))
+            {
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    filteredProjects = filteredProjects.Where(key => key.Name.ToLower().Contains(keyword.ToLower()));
+                }
+
+                if (!string.IsNullOrEmpty(orderBy))
+                {
+                    string columnName = orderBy.Split(":")[0].ToLower();
+                    string order = orderBy.Split(":")[1].ToLower();
+
+                    if (selectors.TryGetValue(columnName, out var selector))
+                    {
+                        filteredProjects = order == "desc"
+                            ? filteredProjects.OrderByDescending(selector)
+                            : filteredProjects.OrderBy(selector);
+                    }
+                }
+
+                var result = await filteredProjects.ToListAsync();
+                return Ok(result);
             }
 
             var allProjects = await _context.Projects.ToListAsync();
@@ -55,10 +85,12 @@ namespace server.Controllers
             return Ok(project);
         }
 
-        public async Task<IActionResult> OrderProject()
-        {
-            
-        }
+        //[Route("projects")]
+        //[HttpGet]
+        //public async Task<IActionResult> OrderProject()
+        //{
+
+        //}
 
         [Route("projects/{id}/update")]
         [HttpPut]

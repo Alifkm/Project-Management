@@ -9,6 +9,7 @@ import {
   faFileEdit,
   faRemove,
   faSearch,
+  faSortUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { faDeleteLeft } from "@fortawesome/free-solid-svg-icons/faDeleteLeft";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
@@ -21,6 +22,7 @@ import {
 } from "react-router-dom";
 import toast from "react-hot-toast";
 import { faSortDown } from "@fortawesome/free-solid-svg-icons/faSortDown";
+import { URL } from "node:url";
 
 interface Project {
   id: number;
@@ -38,12 +40,13 @@ const ProjectList = () => {
   // const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
-  const [projectKeyword, setProjectKeyword] = useState(keyword);
+  const [projectKeyword, setProjectKeyword] = useState(keyword); 
   const location = useLocation();
   const navigate = useNavigate();
   const isAddNewProjectShown = location.pathname === "/projects/create";
   const {id} = useParams();
   const isEditProjectShown = location.pathname.endsWith("/edit");
+
 
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
@@ -51,6 +54,8 @@ const ProjectList = () => {
   const [assignee, setAssignee] = useState("");
 
   const projectToEdit = projects.find((p) => p.id === Number(id));
+
+  const [isAsc, setIsAsc] = useState(true);
 
   const [formData, setFormData] = useState({
     name: projectToEdit?.name || "",
@@ -204,12 +209,60 @@ const ProjectList = () => {
   }
 
   const OrderBy = async (column: String) => {
-    // try {
-    //   const url = 
-    // } catch (error) {
+    try {
+      setIsAsc(!isAsc);
+      const query = UseQuery();
+
+      // console.log(query);
+
+      let url = "";
+      let orderBy = "";
+
+      const a = searchParams.getAll(`orderBy`);
+
+      console.log(a);
+
       
-    // }
+
+      if(isAsc) {
+        if(a.length > 0) {
+          searchParams.delete("orderBy", `${column}:asc`)
+        }
+        searchParams.append("orderBy", `${column}:asc`);
+        // orderBy = `orderBy=${column.toLowerCase()}:asc`;
+      }
+      else {
+        if(a.length > 0) {
+          searchParams.delete("orderBy", `${column}:asc`)
+        }
+        searchParams.delete("orderBy", `${column}:desc`);
+        searchParams.append("orderBy", `${column}:desc`);
+        // orderBy = `orderBy=${column.toLowerCase()}:desc`;
+      }
+
+      // console.log(searchParams);
+      console.log(a);
+      // if(location.search == "") {
+      //   url = `https://localhost:7054/projects?${orderBy}`;
+      // }
+      // else {
+      //   url = `https://localhost:7054/projects${location.search}&${orderBy}`
+      // }
+
+      // const response = await fetch(url);
+      //   if (!response.ok) throw new Error("Server error");
+      // const data = await response.json();
+      // setProjects(data);
+    } catch (error) {
+      setIsServerError(true);
+    }
   }
+
+  const UseQuery = () => {
+    return new URLSearchParams(location.search);
+  }
+
+
 
   if (isServerError) {
     return <ServerError />;
@@ -267,21 +320,33 @@ const ProjectList = () => {
 
       <table className="table-auto w-full text-center mt-5">
         <thead className="border-b-2">
-          <tr>
-            <div 
-              className="flex bg-amber-400 justify-evenly cursor-pointer"
-              onClick={() => OrderBy("Project")}
-            >
-              <th>Project Name </th>
+          <tr >
+
+            <th className="cursor-pointer"
+              onClick={() => OrderBy("name")}>
+              Project Name <FontAwesomeIcon
+              icon={isAsc ? faSortDown : faSortUp} />
+            </th>
+
+            <th className="cursor-pointer"
+              onClick={() => OrderBy("priority")}>
+              Priority <FontAwesomeIcon
+              icon={isAsc ? faSortDown : faSortUp} />
+            </th>
+
+            <th className="cursor-pointer"
+              onClick={() => OrderBy("status")}>
+              Status 
               <FontAwesomeIcon
-              icon={faSortDown}
-              className="invisible"
-              />
-            </div>
-            
-            <th>Priority</th>
-            <th>Status</th>
-            <th>Assignee</th>
+              icon={isAsc ? faSortDown : faSortUp} />
+            </th>
+
+            <th className="cursor-pointer"
+              onClick={() => OrderBy("assignee")}>
+              Assignee <FontAwesomeIcon
+              icon={isAsc ? faSortDown : faSortUp} />
+            </th>
+
             <th>Updated</th>
             <th>Action</th>
           </tr>
