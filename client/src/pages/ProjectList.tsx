@@ -18,11 +18,12 @@ import {
   useSearchParams,
   Route,
   useLocation,
-  useParams
+  useParams,
 } from "react-router-dom";
 import toast from "react-hot-toast";
 import { faSortDown } from "@fortawesome/free-solid-svg-icons/faSortDown";
 import { URL } from "node:url";
+import { isatty } from "node:tty";
 
 interface Project {
   id: number;
@@ -40,13 +41,15 @@ const ProjectList = () => {
   // const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
-  const [projectKeyword, setProjectKeyword] = useState(keyword); 
+  const [projectKeyword, setProjectKeyword] = useState(keyword);
+  const orderBy = searchParams.get("orderBy") || "";
+  const [projectOrderBy, setProjectOrderBy] = useState(orderBy);
+
   const location = useLocation();
   const navigate = useNavigate();
   const isAddNewProjectShown = location.pathname === "/projects/create";
-  const {id} = useParams();
+  const { id } = useParams();
   const isEditProjectShown = location.pathname.endsWith("/edit");
-
 
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
@@ -62,15 +65,23 @@ const ProjectList = () => {
     status: projectToEdit?.status || "",
     priority: projectToEdit?.priority || "",
     assignee: projectToEdit?.assignee || "",
-  })
+  });
 
   // Fetch projects when keyword in URL changes
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const url = keyword
-          ? `https://localhost:7054/projects?keyword=${keyword}`
-          : `https://localhost:7054/projects`;
+        const query = new URLSearchParams();
+
+        if (keyword) {
+          query.append("keyword", keyword);
+        }
+
+        if (orderBy) {
+          query.append("orderBy", orderBy);
+        }
+
+        const url = `https://localhost:7054/projects?${query.toString()}`;
 
         const response = await fetch(url);
         if (!response.ok) throw new Error("Server error");
@@ -82,18 +93,22 @@ const ProjectList = () => {
     };
 
     fetchProjects();
-  }, [keyword, location.pathname]);
+  }, [keyword, orderBy, location.pathname]);
 
   const handleApplyClick = () => {
+    const params = Object.fromEntries(searchParams.entries());
     if (projectKeyword) {
-      setSearchParams({ keyword: projectKeyword });
+      params.keyword = projectKeyword;
     } else {
-      setSearchParams({});
+      delete params.keyword;
     }
+    setSearchParams(params);
   };
 
   const handleClearSearchClick = () => {
-    setSearchParams("");
+    const params = Object.fromEntries(searchParams.entries());
+    delete params.keyword;
+    setSearchParams(params);
     setProjectKeyword("");
   };
 
@@ -149,10 +164,11 @@ const ProjectList = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData(
-      {...formData, [e.target.name]: e.target.value });
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmitEdit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,24 +182,24 @@ const ProjectList = () => {
     };
 
     try {
-      const response = await fetch(`https://localhost:7054/projects/${id}/update`,
-       {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editProject),
-       }
-      ) 
-      
-       if (!response.ok) throw new Error("Failed to update project");
+      const response = await fetch(
+        `https://localhost:7054/projects/${id}/update`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editProject),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to update project");
 
       toast.success("Success update project");
       navigate("/projects");
     } catch (error) {
       toast.error("Error update project");
     }
-
   };
 
   const openEditModal = async (id: Number) => {
@@ -191,85 +207,56 @@ const ProjectList = () => {
       const url = `https://localhost:7054/projects/${id}/edit`;
 
       const response = await fetch(url);
-      if (!response.ok) throw new Error("Server error while getting data by id");
+      if (!response.ok)
+        throw new Error("Server error while getting data by id");
       const data = await response.json();
 
-      navigate(`/projects/${id}/edit`)
-      setFormData( {
+      navigate(`/projects/${id}/edit`);
+      setFormData({
         name: data.name,
         status: data.status,
         assignee: data.assignee,
-        priority: data.priority
+        priority: data.priority,
       });
-      
-    }
-    catch {
+    } catch {
       setIsServerError(true);
     }
-  }
+  };
 
   const OrderBy = async (column: String) => {
     try {
       setIsAsc(!isAsc);
-      const query = UseQuery();
+      const order = isAsc ? "asc" : "desc";
 
-      // console.log(query);
+      const newOrderBy = `${column.toString()}:${order}`;
 
-      let url = "";
-      let orderBy = "";
+      setProjectOrderBy(newOrderBy);
 
-      const a = searchParams.getAll(`orderBy`);
+      const params = Object.fromEntries(searchParams.entries());
 
-      console.log(a);
+      params.orderBy = newOrderBy;
+      setSearchParams(params);
 
-      
+      console.log(searchParams);
+      console.log(location);
+      const url = `https://localhost:7054/projects${location.search}`;
 
-      if(isAsc) {
-        if(a.length > 0) {
-          searchParams.delete("orderBy", `${column}:asc`)
-        }
-        searchParams.append("orderBy", `${column}:asc`);
-        // orderBy = `orderBy=${column.toLowerCase()}:asc`;
-      }
-      else {
-        if(a.length > 0) {
-          searchParams.delete("orderBy", `${column}:asc`)
-        }
-        searchParams.delete("orderBy", `${column}:desc`);
-        searchParams.append("orderBy", `${column}:desc`);
-        // orderBy = `orderBy=${column.toLowerCase()}:desc`;
-      }
+      console.log(url);
 
-      // console.log(searchParams);
-      console.log(a);
-      // if(location.search == "") {
-      //   url = `https://localhost:7054/projects?${orderBy}`;
-      // }
-      // else {
-      //   url = `https://localhost:7054/projects${location.search}&${orderBy}`
-      // }
-
-      // const response = await fetch(url);
-      //   if (!response.ok) throw new Error("Server error");
-      // const data = await response.json();
-      // setProjects(data);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Server error");
+      const data = await response.json();
+      setProjects(data);
     } catch (error) {
       setIsServerError(true);
     }
-  }
-
-  const UseQuery = () => {
-    return new URLSearchParams(location.search);
-  }
-
-
+  };
 
   if (isServerError) {
     return <ServerError />;
   }
 
   return (
-    
     <div className="relative w-11/12 h-11/12 my-auto bg-white rounded-xl text-[#3F4355]">
       <div className="flex flex-col m-5">
         <div className="flex justify-between mb-5">
@@ -320,31 +307,23 @@ const ProjectList = () => {
 
       <table className="table-auto w-full text-center mt-5">
         <thead className="border-b-2">
-          <tr >
-
-            <th className="cursor-pointer"
-              onClick={() => OrderBy("name")}>
-              Project Name <FontAwesomeIcon
-              icon={isAsc ? faSortDown : faSortUp} />
+          <tr>
+            <th className="cursor-pointer" onClick={() => OrderBy("name")}>
+              Project Name
+              <FontAwesomeIcon icon={isAsc ? faSortDown : faSortUp} />
             </th>
 
-            <th className="cursor-pointer"
-              onClick={() => OrderBy("priority")}>
-              Priority <FontAwesomeIcon
-              icon={isAsc ? faSortDown : faSortUp} />
+            <th className="cursor-pointer" onClick={() => OrderBy("priority")}>
+              Priority <FontAwesomeIcon icon={isAsc ? faSortDown : faSortUp} />
             </th>
 
-            <th className="cursor-pointer"
-              onClick={() => OrderBy("status")}>
-              Status 
-              <FontAwesomeIcon
-              icon={isAsc ? faSortDown : faSortUp} />
+            <th className="cursor-pointer" onClick={() => OrderBy("status")}>
+              Status
+              <FontAwesomeIcon icon={isAsc ? faSortDown : faSortUp} />
             </th>
 
-            <th className="cursor-pointer"
-              onClick={() => OrderBy("assignee")}>
-              Assignee <FontAwesomeIcon
-              icon={isAsc ? faSortDown : faSortUp} />
+            <th className="cursor-pointer" onClick={() => OrderBy("assignee")}>
+              Assignee <FontAwesomeIcon icon={isAsc ? faSortDown : faSortUp} />
             </th>
 
             <th>Updated</th>
@@ -384,13 +363,12 @@ const ProjectList = () => {
           )}
         </tbody>
       </table>
-      
-      
-
 
       {isEditProjectShown && (
-        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 
-                w-full max-w-md p-6 rounded-lg bg-white shadow-lg">
+        <div
+          className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 
+                w-full max-w-md p-6 rounded-lg bg-white shadow-lg"
+        >
           <Modal
             isOpen={true}
             title="Add New Project"
@@ -417,7 +395,9 @@ const ProjectList = () => {
                 value={formData.priority}
                 onChange={handleChange}
               >
-                <option value="" disabled>Pick priority...</option>
+                <option value="" disabled>
+                  Pick priority...
+                </option>
                 <option value="Urgent">Urgent</option>
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
@@ -430,7 +410,9 @@ const ProjectList = () => {
                 value={formData.status}
                 onChange={handleChange}
               >
-                <option value="" disabled>Pick status...</option>
+                <option value="" disabled>
+                  Pick status...
+                </option>
                 <option value="Not Started">Not Started</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Completed">Completed</option>
@@ -442,7 +424,9 @@ const ProjectList = () => {
                 value={formData.assignee}
                 onChange={handleChange}
               >
-                <option value="" disabled>Pick assignee...</option>
+                <option value="" disabled>
+                  Pick assignee...
+                </option>
                 <option value="Alif">Alif</option>
                 <option value="Devy">Devy</option>
               </select>
@@ -458,8 +442,10 @@ const ProjectList = () => {
       )}
 
       {isAddNewProjectShown && (
-        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 
-                w-full max-w-md p-6 rounded-lg bg-white shadow-lg">
+        <div
+          className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 
+                w-full max-w-md p-6 rounded-lg bg-white shadow-lg"
+        >
           <Modal
             isOpen={true}
             title="Add New Project"
@@ -485,7 +471,9 @@ const ProjectList = () => {
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
               >
-                <option value="" disabled>Pick priority...</option>
+                <option value="" disabled>
+                  Pick priority...
+                </option>
                 <option value="Urgent">Urgent</option>
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
@@ -498,7 +486,9 @@ const ProjectList = () => {
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <option value="" disabled>Pick status...</option>
+                <option value="" disabled>
+                  Pick status...
+                </option>
                 <option value="Not Started">Not Started</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Completed">Completed</option>
@@ -510,7 +500,9 @@ const ProjectList = () => {
                 value={assignee}
                 onChange={(e) => setAssignee(e.target.value)}
               >
-                <option value="" disabled>Pick assignee...</option>
+                <option value="" disabled>
+                  Pick assignee...
+                </option>
                 <option value="Alif">Alif</option>
               </select>
               <button
