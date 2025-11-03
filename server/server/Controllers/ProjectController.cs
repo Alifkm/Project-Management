@@ -23,7 +23,7 @@ namespace server.Controllers
         [Route("/")]
         [Route("projects")]
         [HttpGet]
-        public async Task<IActionResult> GetProjects([FromQuery] string? keyword, [FromQuery] string? orderBy)
+        public async Task<IActionResult> GetProjects([FromQuery] string? keyword, [FromQuery] string? orderBy, [FromQuery] int? page, [FromQuery] int? perPage)
         {
             var filteredProjects =  _context.Projects.AsQueryable();
 
@@ -32,10 +32,11 @@ namespace server.Controllers
                 { "name", p => p.Name },
                 { "status", p => p.Status },
                 { "assignee", p => p.Assignee },
-                { "priority", p => p.Priority }
+                { "priority", p => p.Priority },
+                { "updated_at", p => p.Updated_At }
             };
 
-            if (!string.IsNullOrEmpty(keyword) || !string.IsNullOrEmpty(orderBy))
+            if (!string.IsNullOrEmpty(keyword) || !string.IsNullOrEmpty(orderBy) || page.HasValue || perPage.HasValue)
             {
                 if (!string.IsNullOrEmpty(keyword))
                 {
@@ -53,6 +54,11 @@ namespace server.Controllers
                             ? filteredProjects.OrderByDescending(selector)
                             : filteredProjects.OrderBy(selector);
                     }
+                }
+
+                if(perPage.HasValue)
+                {
+                    filteredProjects = filteredProjects.Take(perPage.Value);
                 }
 
                 var result = await filteredProjects.ToListAsync();

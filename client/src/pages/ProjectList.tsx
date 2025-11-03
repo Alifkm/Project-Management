@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy } from "react";
 import "../App.css";
 import Button from "../components/Button/Button";
 import Modal from "../components/Modal/Modal";
@@ -44,6 +44,7 @@ const ProjectList = () => {
   const [projectKeyword, setProjectKeyword] = useState(keyword);
   const orderBy = searchParams.get("orderBy") || "";
   const [projectOrderBy, setProjectOrderBy] = useState(orderBy);
+  const [isSorting, setIsSorting] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -87,13 +88,19 @@ const ProjectList = () => {
         if (!response.ok) throw new Error("Server error");
         const data = await response.json();
         setProjects(data);
+
+        
       } catch (error) {
         setIsServerError(true);
       }
     };
 
     fetchProjects();
-  }, [keyword, orderBy, location.pathname]);
+  }, [
+    keyword, 
+    orderBy,
+    projectOrderBy, 
+    location.pathname]);
 
   const handleApplyClick = () => {
     const params = Object.fromEntries(searchParams.entries());
@@ -225,28 +232,37 @@ const ProjectList = () => {
 
   const OrderBy = async (column: String) => {
     try {
+      if(isSorting) return;
+      setIsSorting(true);
+
+      let order = "asc";
+
+      if (projectOrderBy.startsWith(column.toString())) {
+        order = projectOrderBy.endsWith("asc") ? "desc" : "asc";
+      }
+
       setIsAsc(!isAsc);
-      const order = isAsc ? "asc" : "desc";
+      order = isAsc ? "asc" : "desc";
 
       const newOrderBy = `${column.toString()}:${order}`;
-
+ 
       setProjectOrderBy(newOrderBy);
 
       const params = Object.fromEntries(searchParams.entries());
 
       params.orderBy = newOrderBy;
       setSearchParams(params);
+      console.log(new URLSearchParams(params).toString());
 
-      console.log(searchParams);
-      console.log(location);
-      const url = `https://localhost:7054/projects${location.search}`;
-
-      console.log(url);
+      // const url = `https://localhost:7054/projects${location.search}`;
+      const url = `https://localhost:7054/projects?${new URLSearchParams(params).toString()}`;
 
       const response = await fetch(url);
       if (!response.ok) throw new Error("Server error");
       const data = await response.json();
       setProjects(data);
+      setIsSorting(false);
+
     } catch (error) {
       setIsServerError(true);
     }
@@ -308,25 +324,53 @@ const ProjectList = () => {
       <table className="table-auto w-full text-center mt-5">
         <thead className="border-b-2">
           <tr>
-            <th className="cursor-pointer" onClick={() => OrderBy("name")}>
+            <th className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} onClick={() => OrderBy("name")}>
               Project Name
-              <FontAwesomeIcon icon={isAsc ? faSortDown : faSortUp} />
+              {projectOrderBy.startsWith("name") && (
+                <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
+              )}
             </th>
 
-            <th className="cursor-pointer" onClick={() => OrderBy("priority")}>
-              Priority <FontAwesomeIcon icon={isAsc ? faSortDown : faSortUp} />
+            <th 
+              className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} 
+              onClick={() => OrderBy("priority")}
+            >
+              Priority 
+              {projectOrderBy.startsWith("priority") && (
+                <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
+              )} 
             </th>
 
-            <th className="cursor-pointer" onClick={() => OrderBy("status")}>
+            <th 
+              className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} 
+              onClick={() => OrderBy("status")}
+            >
               Status
-              <FontAwesomeIcon icon={isAsc ? faSortDown : faSortUp} />
+              {projectOrderBy.startsWith("status") && (
+                <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
+              )} 
             </th>
 
-            <th className="cursor-pointer" onClick={() => OrderBy("assignee")}>
-              Assignee <FontAwesomeIcon icon={isAsc ? faSortDown : faSortUp} />
+            <th 
+              className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} 
+              onClick={() => OrderBy("assignee")}
+            >
+              Assignee 
+              {projectOrderBy.startsWith("assignee") && (
+                <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
+              )}
             </th>
 
-            <th>Updated</th>
+            <th 
+              className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} 
+              onClick={() => OrderBy("updated_at")}
+            >
+              Updated 
+              {projectOrderBy.startsWith("updated_at") && (
+                <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
+              )}
+            </th>
+
             <th>Action</th>
           </tr>
         </thead>
@@ -515,6 +559,10 @@ const ProjectList = () => {
           </Modal>
         </div>
       )}
+
+       {/* {!isDataLoaded && (
+        <Loading />
+      )} */}
     </div>
   );
 };
@@ -533,17 +581,3 @@ const ServerError = () => {
 
 export default ProjectList;
 
-{
-  /* {isAddNewProjectShown && (
-        <div className="absolute top-1/2 left-1/2 z-20 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg bg-transparent">
-          <Modal isOpen={isAddNewProjectShown} title="Add New Project">
-            <form action="" method="post" className="flex flex-col gap-4">
-              <input type="text" placeholder="Project name..." className="border-2 border-gray-400 rounded-xl p-2"/>
-              <select name="priority" id="priority" className="border-2 border-gray-400 rounded-xl p-2"></select>
-              <select name="status" id="status" className="border-2 border-gray-400 rounded-xl p-2"></select>
-              <select name="assignee" id="assignee" className="border-2 border-gray-400 rounded-xl p-2"></select>
-            </form>
-          </Modal>
-        </div>
-      )} */
-}
