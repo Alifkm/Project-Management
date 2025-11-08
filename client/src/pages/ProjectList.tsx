@@ -22,8 +22,10 @@ import {
 } from "react-router-dom";
 import toast from "react-hot-toast";
 import { faSortDown } from "@fortawesome/free-solid-svg-icons/faSortDown";
-import { URL } from "node:url";
-import { isatty } from "node:tty";
+import { Button as MaterialButton, IconButton } from "@material-tailwind/react";
+import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import Pagination from "../components/Pagination/Pagination";
+import { error } from "node:console";
 
 interface Project {
   id: number;
@@ -37,6 +39,7 @@ interface Project {
 
 const ProjectList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [totalData, setTotalData] = useState(0);
   const [isServerError, setIsServerError] = useState(false);
   // const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -60,6 +63,12 @@ const ProjectList = () => {
   const projectToEdit = projects.find((p) => p.id === Number(id));
 
   const [isAsc, setIsAsc] = useState(true);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [dataPerPage, setDataPerPage] = useState(2);
+  const page = searchParams.get("page") || 0;
+  const perPage = searchParams.get("perPage") || "";
+  const [isChangePage, setIsChangePage] = useState(false);
 
   const [formData, setFormData] = useState({
     name: projectToEdit?.name || "",
@@ -89,6 +98,7 @@ const ProjectList = () => {
         const data = await response.json();
         setProjects(data);
 
+        console.log(data);
         
       } catch (error) {
         setIsServerError(true);
@@ -96,11 +106,15 @@ const ProjectList = () => {
     };
 
     fetchProjects();
+
   }, [
     keyword, 
     orderBy,
     projectOrderBy, 
-    location.pathname]);
+    location.pathname,
+    currentPage,
+    dataPerPage
+  ]);
 
   const handleApplyClick = () => {
     const params = Object.fromEntries(searchParams.entries());
@@ -252,8 +266,6 @@ const ProjectList = () => {
 
       params.orderBy = newOrderBy;
       setSearchParams(params);
-      console.log(new URLSearchParams(params).toString());
-
       // const url = `https://localhost:7054/projects${location.search}`;
       const url = `https://localhost:7054/projects?${new URLSearchParams(params).toString()}`;
 
@@ -264,16 +276,59 @@ const ProjectList = () => {
       setIsSorting(false);
 
     } catch (error) {
-      setIsServerError(true);
+      
     }
   };
+
+  const OnPageChange = async (page: number) => {
+    try {
+      if(isChangePage) return;
+      setIsChangePage(true);
+      setCurrentPage(page);
+
+      const params = Object.fromEntries(searchParams.entries());
+      params.page = page.toString();
+      params.perPage = dataPerPage.toString();
+      
+      setSearchParams(params);
+      
+      const url = `https://localhost:7054/projects?${new URLSearchParams(params).toString()}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Server error");
+      const data = await response.json();
+      setProjects(data);
+
+      setIsChangePage(false);
+    } catch (error) {
+      setIsServerError(true);
+    }
+  }
+
+  const ChangePerPage = async (maxPerPage: number) => {
+    try {
+      setDataPerPage(maxPerPage);
+
+      const params = Object.fromEntries(searchParams.entries());
+      params.perPage = maxPerPage.toString();
+
+      setSearchParams(params);
+
+      const url = `https://localhost:7054/projects?${new URLSearchParams(params).toString()}`;
+      const response = await fetch(url);
+      if(!response.ok) throw new Error("Server error");
+      const data = await response.json();
+      setProjects(data);
+    } catch (error) {
+      setIsServerError(true)
+    }
+  }
 
   if (isServerError) {
     return <ServerError />;
   }
 
   return (
-    <div className="relative w-11/12 h-11/12 my-auto bg-white rounded-xl text-[#3F4355]">
+    <div className="flex flex-col relative w-11/12 h-11/12 my-auto bg-white rounded-xl text-[#3F4355]">
       <div className="flex flex-col m-5">
         <div className="flex justify-between mb-5">
           <h2 className="text-4xl">Project List</h2>
@@ -376,7 +431,10 @@ const ProjectList = () => {
         </thead>
         <tbody className="py-20">
           {projects.length > 0 ? (
-            projects.map((project) => (
+            projects
+            .slice((currentPage - 1) * dataPerPage, currentPage * dataPerPage)
+            .map((project) => 
+              (
               <tr key={project.id}>
                 <td className="py-2">{project.name}</td>
                 <td className="py-2">{project.priority}</td>
@@ -560,9 +618,27 @@ const ProjectList = () => {
         </div>
       )}
 
-       {/* {!isDataLoaded && (
-        <Loading />
-      )} */}
+      <div className="flex justify-between">
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={projects.length > 0 ? Math.ceil(projects.length / dataPerPage) : 1}
+          maxPerPage={dataPerPage}
+          onPageChange={OnPageChange} 
+          items={projects}
+        />
+        <div className="flex justify-around self-end mr-10">
+          <p className="mr-4">({(currentPage * dataPerPage)-(dataPerPage-(dataPerPage-1))}-
+            {currentPage * dataPerPage > projects.length ? projects.length : currentPage * dataPerPage}/
+            {projects.length})</p>
+          <p>
+            Per Page: 
+            <button className="border-0 hover:cursor-pointer" onClick={() => ChangePerPage(1)}>1</button>,
+            <button className="border-0 hover:cursor-pointer" onClick={() => ChangePerPage(2)}>2</button>,
+            <button className="border-0 hover:cursor-pointer" onClick={() => ChangePerPage(3)}>3</button>
+          </p>
+        </div>
+      </div>
+      
     </div>
   );
 };

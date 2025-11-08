@@ -26,6 +26,7 @@ namespace server.Controllers
         public async Task<IActionResult> GetProjects([FromQuery] string? keyword, [FromQuery] string? orderBy, [FromQuery] int? page, [FromQuery] int? perPage)
         {
             var filteredProjects =  _context.Projects.AsQueryable();
+            int totalData = 0;
 
             var selectors = new Dictionary<string, Expression<Func<Project, object>>>()
             {
@@ -56,17 +57,28 @@ namespace server.Controllers
                     }
                 }
 
-                if(perPage.HasValue)
+                totalData = await filteredProjects.CountAsync();
+
+                if (page.HasValue)
+                {
+                    int skipValue = (page.Value - 1) * perPage.Value;
+                    filteredProjects = filteredProjects.Skip(skipValue);
+                }
+
+                if (perPage.HasValue)
                 {
                     filteredProjects = filteredProjects.Take(perPage.Value);
                 }
 
                 var result = await filteredProjects.ToListAsync();
-                return Ok(result);
+                return Ok(new { data = result, totalData });
             }
 
+
+            totalData = await _context.Projects.CountAsync();
             var allProjects = await _context.Projects.ToListAsync();
-            return Ok(allProjects);
+
+            return Ok(new { data = allProjects, totalData });
         }
 
         [Route("projects/create")]

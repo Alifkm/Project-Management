@@ -11,6 +11,18 @@
       "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\models\\project.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\server.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\server.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\migrations\\applicationdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\migrations\\applicationdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -19,16 +31,8 @@
       "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\seeder\\dbseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\context\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\context\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
@@ -37,10 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\server.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
       "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\server.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|d:\\alip\\portofolio_web\\project-management\\server\\server\\server.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
-      "RelativeMoniker": "D:0:0:{7D75CE10-DA99-4E36-BB6A-D3DAA5264EE9}|server\\server.csproj|solutionrelative:server\\server.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
     }
   ],
   "DocumentGroupContainers": [
@@ -67,6 +67,18 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "server.http",
+              "DocumentMoniker": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\server.http",
+              "RelativeDocumentMoniker": "server\\server.http",
+              "ToolTip": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\server.http",
+              "RelativeToolTip": "server\\server.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2025-11-06T08:12:59.362Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "ApplicationDbContextModelSnapshot.cs",
               "DocumentMoniker": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Migrations\\ApplicationDbContextModelSnapshot.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\ApplicationDbContextModelSnapshot.cs",
@@ -74,12 +86,11 @@
               "RelativeToolTip": "server\\Migrations\\ApplicationDbContextModelSnapshot.cs",
               "ViewState": "AgIAABkAAAAAAAAAAAAkwCoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-03T07:43:21.339Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-03T07:43:21.339Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\appsettings.json",
               "RelativeDocumentMoniker": "server\\appsettings.json",
@@ -91,7 +102,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "launchSettings.json",
               "DocumentMoniker": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "server\\Properties\\launchSettings.json",
@@ -104,18 +115,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 9,
-              "Title": "server.http",
-              "DocumentMoniker": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\server.http",
-              "RelativeDocumentMoniker": "server\\server.http",
-              "ToolTip": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\server.http",
-              "RelativeToolTip": "server\\server.http",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2025-10-23T08:23:18.318Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
               "Title": "server",
               "DocumentMoniker": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\server.csproj",
               "RelativeDocumentMoniker": "server\\server.csproj",
@@ -126,7 +125,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "DbSeeder.cs",
               "DocumentMoniker": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Seeder\\DbSeeder.cs",
               "RelativeDocumentMoniker": "server\\Seeder\\DbSeeder.cs",
@@ -134,8 +133,7 @@
               "RelativeToolTip": "server\\Seeder\\DbSeeder.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-23T09:48:32.8Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-23T09:48:32.8Z"
             },
             {
               "$type": "Document",
@@ -145,13 +143,13 @@
               "RelativeDocumentMoniker": "server\\Program.cs",
               "ToolTip": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Program.cs",
               "RelativeToolTip": "server\\Program.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAADYAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-22T03:17:25.964Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Context\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "server\\Context\\ApplicationDbContext.cs",
@@ -169,10 +167,9 @@
               "RelativeDocumentMoniker": "server\\Models\\Project.cs",
               "ToolTip": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Models\\Project.cs",
               "RelativeToolTip": "server\\Models\\Project.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAUwBsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-17T08:42:28.433Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-17T08:42:28.433Z"
             },
             {
               "$type": "Document",
@@ -182,7 +179,7 @@
               "RelativeDocumentMoniker": "server\\Controllers\\ProjectController.cs",
               "ToolTip": "D:\\Alip\\portofolio_web\\Project-Management\\server\\server\\Controllers\\ProjectController.cs",
               "RelativeToolTip": "server\\Controllers\\ProjectController.cs",
-              "ViewState": "AgIAAB0AAAAAAAAAAAAEwCYAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAADUAAAAAAAAAAAAUwE8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-16T09:56:24.777Z",
               "EditorCaption": ""
