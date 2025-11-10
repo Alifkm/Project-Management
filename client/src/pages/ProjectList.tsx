@@ -96,25 +96,16 @@ const ProjectList = () => {
         const response = await fetch(url);
         if (!response.ok) throw new Error("Server error");
         const data = await response.json();
-        setProjects(data);
-
-        console.log(data);
-        
+        setProjects(data.data);
+        setTotalData(data.totalData);
+        console.log(totalData);
       } catch (error) {
         setIsServerError(true);
       }
     };
 
     fetchProjects();
-
-  }, [
-    keyword, 
-    orderBy,
-    projectOrderBy, 
-    location.pathname,
-    currentPage,
-    dataPerPage
-  ]);
+  }, [keyword, orderBy, projectOrderBy, location.pathname]);
 
   const handleApplyClick = () => {
     const params = Object.fromEntries(searchParams.entries());
@@ -246,7 +237,7 @@ const ProjectList = () => {
 
   const OrderBy = async (column: String) => {
     try {
-      if(isSorting) return;
+      if (isSorting) return;
       setIsSorting(true);
 
       let order = "asc";
@@ -259,7 +250,7 @@ const ProjectList = () => {
       order = isAsc ? "asc" : "desc";
 
       const newOrderBy = `${column.toString()}:${order}`;
- 
+
       setProjectOrderBy(newOrderBy);
 
       const params = Object.fromEntries(searchParams.entries());
@@ -267,42 +258,43 @@ const ProjectList = () => {
       params.orderBy = newOrderBy;
       setSearchParams(params);
       // const url = `https://localhost:7054/projects${location.search}`;
-      const url = `https://localhost:7054/projects?${new URLSearchParams(params).toString()}`;
+      const url = `https://localhost:7054/projects?${new URLSearchParams(
+        params
+      ).toString()}`;
 
       const response = await fetch(url);
       if (!response.ok) throw new Error("Server error");
       const data = await response.json();
       setProjects(data);
       setIsSorting(false);
-
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
 
   const OnPageChange = async (page: number) => {
     try {
-      if(isChangePage) return;
+      if (isChangePage) return;
       setIsChangePage(true);
       setCurrentPage(page);
 
       const params = Object.fromEntries(searchParams.entries());
       params.page = page.toString();
       params.perPage = dataPerPage.toString();
-      
+
       setSearchParams(params);
-      
-      const url = `https://localhost:7054/projects?${new URLSearchParams(params).toString()}`;
+
+      const url = `https://localhost:7054/projects?${new URLSearchParams(
+        params
+      ).toString()}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("Server error");
       const data = await response.json();
-      setProjects(data);
+      setProjects(data.data);
 
       setIsChangePage(false);
     } catch (error) {
       setIsServerError(true);
     }
-  }
+  };
 
   const ChangePerPage = async (maxPerPage: number) => {
     try {
@@ -313,15 +305,17 @@ const ProjectList = () => {
 
       setSearchParams(params);
 
-      const url = `https://localhost:7054/projects?${new URLSearchParams(params).toString()}`;
+      const url = `https://localhost:7054/projects?${new URLSearchParams(
+        params
+      ).toString()}`;
       const response = await fetch(url);
-      if(!response.ok) throw new Error("Server error");
+      if (!response.ok) throw new Error("Server error");
       const data = await response.json();
-      setProjects(data);
+      setProjects(data.data);
     } catch (error) {
-      setIsServerError(true)
+      setIsServerError(true);
     }
-  }
+  };
 
   if (isServerError) {
     return <ServerError />;
@@ -379,48 +373,61 @@ const ProjectList = () => {
       <table className="table-auto w-full text-center mt-5">
         <thead className="border-b-2">
           <tr>
-            <th className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} onClick={() => OrderBy("name")}>
+            <th
+              className={`cursor-pointer ${
+                isSorting ? "opacity-50 pointer-events-none" : ""
+              }`}
+              onClick={() => OrderBy("name")}
+            >
               Project Name
               {projectOrderBy.startsWith("name") && (
                 <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
               )}
             </th>
 
-            <th 
-              className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} 
+            <th
+              className={`cursor-pointer ${
+                isSorting ? "opacity-50 pointer-events-none" : ""
+              }`}
               onClick={() => OrderBy("priority")}
             >
-              Priority 
+              Priority
               {projectOrderBy.startsWith("priority") && (
                 <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
-              )} 
+              )}
             </th>
 
-            <th 
-              className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} 
+            <th
+              className={`cursor-pointer ${
+                isSorting ? "opacity-50 pointer-events-none" : ""
+              }`}
               onClick={() => OrderBy("status")}
             >
               Status
               {projectOrderBy.startsWith("status") && (
                 <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
-              )} 
+              )}
             </th>
 
-            <th 
-              className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} 
+            <th
+              className={`cursor-pointer ${
+                isSorting ? "opacity-50 pointer-events-none" : ""
+              }`}
               onClick={() => OrderBy("assignee")}
             >
-              Assignee 
+              Assignee
               {projectOrderBy.startsWith("assignee") && (
                 <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
               )}
             </th>
 
-            <th 
-              className={`cursor-pointer ${isSorting ? 'opacity-50 pointer-events-none' : ''}`} 
+            <th
+              className={`cursor-pointer ${
+                isSorting ? "opacity-50 pointer-events-none" : ""
+              }`}
               onClick={() => OrderBy("updated_at")}
             >
-              Updated 
+              Updated
               {projectOrderBy.startsWith("updated_at") && (
                 <FontAwesomeIcon icon={isAsc ? faSortUp : faSortDown} />
               )}
@@ -432,32 +439,31 @@ const ProjectList = () => {
         <tbody className="py-20">
           {projects.length > 0 ? (
             projects
-            .slice((currentPage - 1) * dataPerPage, currentPage * dataPerPage)
-            .map((project) => 
-              (
-              <tr key={project.id}>
-                <td className="py-2">{project.name}</td>
-                <td className="py-2">{project.priority}</td>
-                <td className="py-2">{project.status}</td>
-                <td className="py-2">{project.assignee}</td>
-                <td className="py-2">
-                  {new Date(project.updated_At).toLocaleString()}
-                </td>
-                <td className="gap-x-5 py-2">
-                  <FontAwesomeIcon
-                    icon={faEdit}
-                    className="cursor-pointer hover:bg-gray-400 py-1 rounded-xs mx-1"
-                    // onClick={() => navigate(`/projects/${project.id}/edit`)}
-                    onClick={() => openEditModal(project.id)}
-                  />
-                  <FontAwesomeIcon
-                    icon={faTrash}
-                    className="cursor-pointer text-red-500 hover:bg-red-300 py-1 rounded-xs mx-1"
-                    onClick={() => handleDeleteClick(project.id)}
-                  />
-                </td>
-              </tr>
-            ))
+              // .slice((currentPage - 1) * dataPerPage, currentPage * dataPerPage)
+              .map((project) => (
+                <tr key={project.id}>
+                  <td className="py-2">{project.name}</td>
+                  <td className="py-2">{project.priority}</td>
+                  <td className="py-2">{project.status}</td>
+                  <td className="py-2">{project.assignee}</td>
+                  <td className="py-2">
+                    {new Date(project.updated_At).toLocaleString()}
+                  </td>
+                  <td className="gap-x-5 py-2">
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      className="cursor-pointer hover:bg-gray-400 py-1 rounded-xs mx-1"
+                      // onClick={() => navigate(`/projects/${project.id}/edit`)}
+                      onClick={() => openEditModal(project.id)}
+                    />
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      className="cursor-pointer text-red-500 hover:bg-red-300 py-1 rounded-xs mx-1"
+                      onClick={() => handleDeleteClick(project.id)}
+                    />
+                  </td>
+                </tr>
+              ))
           ) : (
             <tr className="col-span-6">
               <td>There is no data found based on keyword</td>
@@ -619,26 +625,46 @@ const ProjectList = () => {
       )}
 
       <div className="flex justify-between">
-        <Pagination 
+        <Pagination
           currentPage={currentPage}
-          totalPages={projects.length > 0 ? Math.ceil(projects.length / dataPerPage) : 1}
+          totalPages={Math.ceil(totalData / dataPerPage)}
           maxPerPage={dataPerPage}
-          onPageChange={OnPageChange} 
+          onPageChange={OnPageChange}
           items={projects}
         />
         <div className="flex justify-around self-end mr-10">
-          <p className="mr-4">({(currentPage * dataPerPage)-(dataPerPage-(dataPerPage-1))}-
-            {currentPage * dataPerPage > projects.length ? projects.length : currentPage * dataPerPage}/
-            {projects.length})</p>
+          <p className="mr-4">
+            ({currentPage * dataPerPage - (dataPerPage - (dataPerPage - 1))}-
+            {currentPage * dataPerPage > projects.length
+              ? projects.length
+              : currentPage * dataPerPage}
+            /{projects.length})
+          </p>
           <p>
-            Per Page: 
-            <button className="border-0 hover:cursor-pointer" onClick={() => ChangePerPage(1)}>1</button>,
-            <button className="border-0 hover:cursor-pointer" onClick={() => ChangePerPage(2)}>2</button>,
-            <button className="border-0 hover:cursor-pointer" onClick={() => ChangePerPage(3)}>3</button>
+            Per Page:
+            <button
+              className="border-0 hover:cursor-pointer"
+              onClick={() => ChangePerPage(1)}
+            >
+              1
+            </button>
+            ,
+            <button
+              className="border-0 hover:cursor-pointer"
+              onClick={() => ChangePerPage(2)}
+            >
+              2
+            </button>
+            ,
+            <button
+              className="border-0 hover:cursor-pointer"
+              onClick={() => ChangePerPage(3)}
+            >
+              3
+            </button>
           </p>
         </div>
       </div>
-      
     </div>
   );
 };
@@ -656,4 +682,3 @@ const ServerError = () => {
 };
 
 export default ProjectList;
-

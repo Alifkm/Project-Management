@@ -59,7 +59,7 @@ namespace server.Controllers
 
                 totalData = await filteredProjects.CountAsync();
 
-                if (page.HasValue)
+                if (page.HasValue && perPage.HasValue)
                 {
                     int skipValue = (page.Value - 1) * perPage.Value;
                     filteredProjects = filteredProjects.Skip(skipValue);
