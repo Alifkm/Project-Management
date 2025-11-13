@@ -27,6 +27,20 @@ namespace server.Controllers
         {
             var filteredProjects =  _context.Projects.AsQueryable();
             int totalData = 0;
+            int pageNumber = page ?? 1;
+            int pageSize = perPage ?? 10;
+
+            if(!string.IsNullOrEmpty(keyword))
+            {
+                filteredProjects = filteredProjects
+                    .Where(
+                            (p) => p.Name.ToLower().Contains(keyword.ToLower()) || 
+                                    p.Status.ToLower().Contains(keyword.ToLower()) ||
+                                    p.Assignee.ToLower().Contains(keyword.ToLower()) ||
+                                    p.Priority.ToLower().Contains(keyword.ToLower())
+                        )
+                    .AsQueryable();
+            }
 
             var selectors = new Dictionary<string, Expression<Func<Project, object>>>()
             {
@@ -37,48 +51,29 @@ namespace server.Controllers
                 { "updated_at", p => p.Updated_At }
             };
 
-            if (!string.IsNullOrEmpty(keyword) || !string.IsNullOrEmpty(orderBy) || page.HasValue || perPage.HasValue)
+            if(!string.IsNullOrEmpty(orderBy))
             {
-                if (!string.IsNullOrEmpty(keyword))
+                string columnName = orderBy.Split(":")[0].ToLower();
+                string order = orderBy.Split(":")[1].ToLower();
+
+                if (selectors.TryGetValue(columnName, out var selector))
                 {
-                    filteredProjects = filteredProjects.Where(key => key.Name.ToLower().Contains(keyword.ToLower()));
+                    filteredProjects = order == "desc"
+                        ? filteredProjects.OrderByDescending(selector)
+                        : filteredProjects.OrderBy(selector);
                 }
-
-                if (!string.IsNullOrEmpty(orderBy))
-                {
-                    string columnName = orderBy.Split(":")[0].ToLower();
-                    string order = orderBy.Split(":")[1].ToLower();
-
-                    if (selectors.TryGetValue(columnName, out var selector))
-                    {
-                        filteredProjects = order == "desc"
-                            ? filteredProjects.OrderByDescending(selector)
-                            : filteredProjects.OrderBy(selector);
-                    }
-                }
-
-                totalData = await filteredProjects.CountAsync();
-
-                if (page.HasValue && perPage.HasValue)
-                {
-                    int skipValue = (page.Value - 1) * perPage.Value;
-                    filteredProjects = filteredProjects.Skip(skipValue);
-                }
-
-                if (perPage.HasValue)
-                {
-                    filteredProjects = filteredProjects.Take(perPage.Value);
-                }
-
-                var result = await filteredProjects.ToListAsync();
-                return Ok(new { data = result, totalData });
             }
 
+            totalData = await filteredProjects.CountAsync();
 
-            totalData = await _context.Projects.CountAsync();
-            var allProjects = await _context.Projects.ToListAsync();
+            int skipValue = (pageNumber - 1) * pageSize;
+            filteredProjects = filteredProjects
+                .Skip(skipValue)
+                .Take(pageSize);
 
-            return Ok(new { data = allProjects, totalData });
+            var allProjects = await filteredProjects.ToListAsync();
+
+            return Ok(new { data = allProjects, totalData, perPage = pageSize });
         }
 
         [Route("projects/create")]

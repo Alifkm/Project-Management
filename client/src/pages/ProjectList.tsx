@@ -65,7 +65,7 @@ const ProjectList = () => {
   const [isAsc, setIsAsc] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [dataPerPage, setDataPerPage] = useState(2);
+  const [dataPerPage, setDataPerPage] = useState(0);
   const page = searchParams.get("page") || 0;
   const perPage = searchParams.get("perPage") || "";
   const [isChangePage, setIsChangePage] = useState(false);
@@ -98,7 +98,8 @@ const ProjectList = () => {
         const data = await response.json();
         setProjects(data.data);
         setTotalData(data.totalData);
-        console.log(totalData);
+        setDataPerPage(data.perPage);
+        
       } catch (error) {
         setIsServerError(true);
       }
@@ -148,6 +149,11 @@ const ProjectList = () => {
       if (!response.ok) throw new Error("Failed to create new project");
 
       toast.success("Success add new project");
+
+      setName("");
+      setPriority("");
+      setAssignee("");
+      setStatus("");
       navigate("/projects");
     } catch (error) {
       toast.error("Error add new project");
@@ -285,6 +291,7 @@ const ProjectList = () => {
       const url = `https://localhost:7054/projects?${new URLSearchParams(
         params
       ).toString()}`;
+
       const response = await fetch(url);
       if (!response.ok) throw new Error("Server error");
       const data = await response.json();
@@ -301,6 +308,7 @@ const ProjectList = () => {
       setDataPerPage(maxPerPage);
 
       const params = Object.fromEntries(searchParams.entries());
+      params.page = "1";
       params.perPage = maxPerPage.toString();
 
       setSearchParams(params);
@@ -369,9 +377,10 @@ const ProjectList = () => {
           />
         </div>
       </div>
-
-      <table className="table-auto w-full text-center mt-5">
-        <thead className="border-b-2">
+      
+      <div className="table-wrp block max-h-96 overflow-y-auto">
+        <table className="w-full text-center mt-5 border-collapse separate">
+        <thead className="border-b-2 sticky top-0 bg-gray-500 z-10">
           <tr>
             <th
               className={`cursor-pointer ${
@@ -436,41 +445,45 @@ const ProjectList = () => {
             <th>Action</th>
           </tr>
         </thead>
-        <tbody className="py-20">
-          {projects.length > 0 ? (
-            projects
-              // .slice((currentPage - 1) * dataPerPage, currentPage * dataPerPage)
-              .map((project) => (
-                <tr key={project.id}>
-                  <td className="py-2">{project.name}</td>
-                  <td className="py-2">{project.priority}</td>
-                  <td className="py-2">{project.status}</td>
-                  <td className="py-2">{project.assignee}</td>
-                  <td className="py-2">
-                    {new Date(project.updated_At).toLocaleString()}
-                  </td>
-                  <td className="gap-x-5 py-2">
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      className="cursor-pointer hover:bg-gray-400 py-1 rounded-xs mx-1"
-                      // onClick={() => navigate(`/projects/${project.id}/edit`)}
-                      onClick={() => openEditModal(project.id)}
-                    />
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      className="cursor-pointer text-red-500 hover:bg-red-300 py-1 rounded-xs mx-1"
-                      onClick={() => handleDeleteClick(project.id)}
-                    />
-                  </td>
-                </tr>
-              ))
-          ) : (
-            <tr className="col-span-6">
-              <td>There is no data found based on keyword</td>
-            </tr>
-          )}
+        <tbody className="py-20 sticky top-0">
+            {projects.length > 0 ? (
+              projects
+                // .slice((currentPage - 1) * dataPerPage, currentPage * dataPerPage)
+                .map((project) => (
+                  <tr key={project.id}>
+                    <td className="py-2">{project.name}</td>
+                    <td className="py-2">{project.priority}</td>
+                    <td className="py-2">{project.status}</td>
+                    <td className="py-2">{project.assignee}</td>
+                    <td className="py-2">
+                      {new Date(project.updated_At).toLocaleString()}
+                    </td>
+                    <td className="gap-x-5 py-2">
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="cursor-pointer hover:bg-gray-400 py-1 rounded-xs mx-1"
+                        // onClick={() => navigate(`/projects/${project.id}/edit`)}
+                        onClick={() => openEditModal(project.id)}
+                      />
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        className="cursor-pointer text-red-500 hover:bg-red-300 py-1 rounded-xs mx-1"
+                        onClick={() => handleDeleteClick(project.id)}
+                      />
+                    </td>
+                  </tr>
+
+                ))
+            ) : (
+              <tr className="col-span-6">
+                <td>There is no data found based on keyword</td>
+              </tr>
+            )}
+          
         </tbody>
       </table>
+      </div>
+      
 
       {isEditProjectShown && (
         <div
@@ -624,7 +637,7 @@ const ProjectList = () => {
         </div>
       )}
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-end">
         <Pagination
           currentPage={currentPage}
           totalPages={Math.ceil(totalData / dataPerPage)}
@@ -635,32 +648,32 @@ const ProjectList = () => {
         <div className="flex justify-around self-end mr-10">
           <p className="mr-4">
             ({currentPage * dataPerPage - (dataPerPage - (dataPerPage - 1))}-
-            {currentPage * dataPerPage > projects.length
-              ? projects.length
+            {currentPage * dataPerPage > totalData
+              ? totalData
               : currentPage * dataPerPage}
-            /{projects.length})
+            /{totalData})
           </p>
           <p>
             Per Page:
             <button
               className="border-0 hover:cursor-pointer"
-              onClick={() => ChangePerPage(1)}
+              onClick={() => ChangePerPage(5)}
             >
-              1
+              5
             </button>
             ,
             <button
               className="border-0 hover:cursor-pointer"
-              onClick={() => ChangePerPage(2)}
+              onClick={() => ChangePerPage(10)}
             >
-              2
+              10
             </button>
             ,
             <button
               className="border-0 hover:cursor-pointer"
-              onClick={() => ChangePerPage(3)}
+              onClick={() => ChangePerPage(30)}
             >
-              3
+              30
             </button>
           </p>
         </div>

@@ -42,7 +42,7 @@ function App() {
               User
             </NavButton>
           </div>
-          <div className="col-span-4 bg-cyan-900 flex content-center justify-center">
+          <div className="col-span-4 bg-gray-200 flex content-center justify-center">
             <Routes>
               <Route path="/" element={<ProjectList />} />
               <Route path="/projects" element={<ProjectList />} />
