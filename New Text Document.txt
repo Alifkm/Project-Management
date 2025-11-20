@@ -1,0 +1,13 @@
+/src
+ └── /pages
+      └── /projects
+           ├── ProjectList.tsx
+           ├── components/
+           │     ├── ProjectTable.tsx
+           │     ├── SearchBar.tsx
+           │     ├── ProjectForm.tsx      (for create + edit)
+           │     └── ProjectActions.tsx   (edit + delete buttons)
+           ├── hooks/
+           │     └── useProjects.ts       (fetch, search, sort, paging)
+           └── services/
+                 └── project.service.ts   (API calls)

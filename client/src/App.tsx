@@ -1,7 +1,7 @@
 import { Children } from "react";
 import "./App.css";
 import NavButton from "./components/NavButton/NavButton";
-import ProjectList from "./pages/ProjectList";
+import ProjectList from "./pages/projects/ProjectList";
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
