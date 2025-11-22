@@ -6,7 +6,7 @@ const BASE_URL = "https://localhost:7054/projects";
 
 export const GetProjects = 
   async (query: ProjectQuery): 
-  Promise<ProjectListResponse | undefined> => {
+  Promise<ProjectListResponse | any> => {
   try {
     const qs = new URLSearchParams(query as any).toString();
     const response = await fetch(`${BASE_URL}?${qs}`);
@@ -45,7 +45,7 @@ const Request = async (
       },
       body: body ? JSON.stringify(body) : undefined,
     });
-
+    console.log(`${BASE_URL}/${id}/${endpoint}`);
     if(!response.ok) {
       toast.error("Server error");
     }

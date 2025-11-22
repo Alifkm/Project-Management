@@ -27,8 +27,8 @@ import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Pagination from "../../components/Pagination/Pagination";
 import { error } from "node:console";
 import "./services/project.service";
-import { GetProject, ManageProject, GetProjects } from "./services/project.service";
-import { ProjectQuery, ProjectListResponse } from "./types/project.types";
+import { GetProject, ManageProject, GetProjects, CreateProject } from "./services/project.service";
+import { ProjectQuery, ProjectListResponse, Project as Example } from "./types/project.types";
 
 
 interface Project {
@@ -85,24 +85,10 @@ const ProjectList = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const query = new URLSearchParams();
-
-        if (keyword) {
-          query.append("keyword", keyword);
-        }
-
-        if (orderBy) {
-          query.append("orderBy", orderBy);
-        }
-
         const data = await GetProjects({
           keyword,
           orderBy
         })
-
-        // const data = await GetProject(query.toString());
-
-        console.log(data.data);
 
         setProjects(data.data);
         setTotalData(data.totalData);
@@ -146,19 +132,19 @@ const ProjectList = () => {
     };
 
     try {
-      const response = await ManageProject(
-        "create",
-        "POST",
-        0,
-        {
-          "Content-Type": "application/json",
-        },
-        JSON.stringify(newProject)
-        );
+      await CreateProject(newProject);
 
-      if (!response.ok) throw new Error("Failed to create new project");
+      // const response = await ManageProject(
+      //   "create",
+      //   "POST",
+      //   0,
+      //   {
+      //     "Content-Type": "application/json",
+      //   },
+      //   JSON.stringify(newProject)
+      //   );
 
-      toast.success("Success add new project");
+      // if (!response.ok) throw new Error("Failed to create new project");
 
       setName("");
       setPriority("");
@@ -854,21 +840,6 @@ const ProjectList = () => {
             </select>
 
             <select
-              name="assignee"
-              id="assignee"
-              className="border-2 border-gray-400 rounded-xl p-2"
-              value={isEditProjectShown ? formData.assignee : assignee}
-              onChange={isEditProjectShown ? handleChange : (e) => setAssignee(e.target.value)}
-            >
-              <option value="" disabled>
-                Pick assignee...
-              </option>
-              <option value="Not Started">Not Started</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-            </select>
-
-            <select
               name="status"
               id="status"
               className="border-2 border-gray-400 rounded-xl p-2"
@@ -877,6 +848,21 @@ const ProjectList = () => {
             >
               <option value="" disabled>
                 Pick status...
+              </option>
+              <option value="Not Started">Not Started</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+
+            <select
+              name="assignee"
+              id="assignee"
+              className="border-2 border-gray-400 rounded-xl p-2"
+              value={isEditProjectShown ? formData.assignee : assignee}
+              onChange={isEditProjectShown ? handleChange : (e) => setAssignee(e.target.value)}
+            >
+              <option value="" disabled>
+                Pick assignee...
               </option>
               <option value="Alif">Alif</option>
             </select>

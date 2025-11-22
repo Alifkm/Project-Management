@@ -1,11 +1,10 @@
 export interface Project {
-  id: number,
   name: string,
   assignee: string,
   priority: string,
   status: string,
-  created_At: string,
-  updated_At: string
+  created_At: Date,
+  updated_At: Date
 }
 
 export interface ProjectQuery {
