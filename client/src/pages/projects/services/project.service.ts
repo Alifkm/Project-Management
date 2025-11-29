@@ -14,11 +14,11 @@ export const GetProjects = async (
   try {
     const qs = new URLSearchParams(query as any).toString();
     const response = await fetch(`${BASE_URL}?${qs}`);
-    console.
-    'hdg
+    
+    console.log(`${BASE_URL}?${qs}`);
     if (!response.ok) toast.error("Failed to load projects");
 
-    return await response.json();yy
+    return await response.json();
   } catch (error) {
     toast.error("Server Error");
   }
@@ -71,41 +71,4 @@ const Request = async (
   } catch (error) {
     toast.error("Server error");
   }
-};
-
-export const GetProject = async (params: string) => {
-  try {
-    const url = `https://localhost:7054/projects?${new URLSearchParams(
-      params
-    )}`;
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      toast.error("Server Error");
-    }
-
-    const data = response.json();
-    return data;
-  } catch (error) {
-    toast.error("Server Error");
-  }
-};
-
-export const ManageProject = async (
-  param: string,
-  method: string,
-  id?: number,
-  headers?: HeadersInit,
-  body?: BodyInit
-) => {
-  const response = await fetch(
-    `https://localhost:7054/projects/${id}/${param}`,
-    {
-      method: method,
-      headers: headers,
-      body: body,
-    }
-  );
-
-  return response;
 };

@@ -28,8 +28,6 @@ import Pagination from "../../components/Pagination/Pagination";
 import { error } from "node:console";
 import "./services/project.service";
 import {
-  GetProject,
-  ManageProject,
   GetProjects,
   CreateProject,
   DeleteProject,
@@ -39,18 +37,18 @@ import {
 import {
   ProjectQuery,
   ProjectListResponse,
-  Project as Example,
+  Project,
 } from "./types/project.types";
 
-interface Project {
-  id: number;
-  name: string;
-  status: string;
-  priority: string;
-  assignee: string;
-  created_At: string;
-  updated_At: string;
-}
+// interface Project {
+//   id: number;
+//   name: string;
+//   status: string;
+//   priority: string;
+//   assignee: string;
+//   created_At: string;
+//   updated_At: string;
+// }
 
 const ProjectList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -260,15 +258,8 @@ const ProjectList = () => {
 
       setSearchParams(params);
 
-      const data = await GetProjects({ keyword, orderBy });
+      const data = await GetProjects({ page: page, perPage: dataPerPage });
 
-      // const url = `https://localhost:7054/projects?${new URLSearchParams(
-      //   params
-      // ).toString()}`;
-
-      // const response = await fetch(url);
-      // if (!response.ok) throw new Error("Server error");
-      // const data = await response.json();
       setProjects(data.data);
 
       setIsChangePage(false);
@@ -287,14 +278,8 @@ const ProjectList = () => {
 
       setSearchParams(params);
 
-      const data = await GetProjects({ keyword, orderBy });
+      const data = await GetProjects({ page: 1, perPage: maxPerPage });
 
-      // const url = `https://localhost:7054/projects?${new URLSearchParams(
-      //   params
-      // ).toString()}`;
-      // const response = await fetch(url);
-      // if (!response.ok) throw new Error("Server error");
-      // const data = await response.json();
       setProjects(data.data);
     } catch (error) {
       setIsServerError(true);
