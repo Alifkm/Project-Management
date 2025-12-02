@@ -14,8 +14,7 @@ export const GetProjects = async (
   try {
     const qs = new URLSearchParams(query as any).toString();
     const response = await fetch(`${BASE_URL}?${qs}`);
-    
-    console.log(`${BASE_URL}?${qs}`);
+
     if (!response.ok) toast.error("Failed to load projects");
 
     return await response.json();
@@ -39,7 +38,7 @@ export const UpdateProject = async (id: number, project: Project) => {
   return await Request("update", "PUT", project, id);
 };
 
-export const DeleteProject = async (id: number) => {
+export const DeleteProject = async (id?: number) => {
   return await Request("delete", "DELETE", null, id);
 };
 

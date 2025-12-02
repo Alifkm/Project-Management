@@ -8,7 +8,7 @@
 // }
 
 export interface Project {
-  id: number;
+  id?: number;
   name: string;
   assignee: string;
   priority: string;

@@ -40,16 +40,6 @@ import {
   Project,
 } from "./types/project.types";
 
-// interface Project {
-//   id: number;
-//   name: string;
-//   status: string;
-//   priority: string;
-//   assignee: string;
-//   created_At: string;
-//   updated_At: string;
-// }
-
 const ProjectList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [totalData, setTotalData] = useState(0);
@@ -133,12 +123,13 @@ const ProjectList = () => {
     e.preventDefault();
 
     const newProject = {
+      // id: Number(id),
       name,
       status,
       assignee,
       priority,
-      created_At: new Date(),
-      updated_At: new Date(),
+      created_At: new Date().toISOString(),
+      updated_At: new Date().toISOString(),
     };
 
     try {
@@ -153,7 +144,7 @@ const ProjectList = () => {
     }
   };
 
-  const handleDeleteClick = async (id: number) => {
+  const handleDeleteClick = async (id?: number) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this project?"
     );
@@ -184,8 +175,8 @@ const ProjectList = () => {
       status: formData.status,
       priority: formData.priority,
       assignee: formData.assignee,
-      created_At: new Date(formData.created_At),
-      updated_At: new Date(),
+      created_At: formData.created_At,
+      updated_At: new Date().toISOString(),
     };
 
     try {
@@ -197,7 +188,7 @@ const ProjectList = () => {
     }
   };
 
-  const openEditModal = async (id: Number) => {
+  const openEditModal = async (id?: Number) => {
     try {
       const data = await EditProject(Number(id)); // call the API to open edit modal for the project
       navigate(`/projects/${id}/edit`);
