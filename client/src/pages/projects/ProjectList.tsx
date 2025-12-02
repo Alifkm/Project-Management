@@ -34,15 +34,15 @@ import {
   UpdateProject,
   EditProject,
 } from "./services/project.service";
-import {
-  ProjectQuery,
-  ProjectListResponse,
-  Project,
-} from "./types/project.types";
+import { useProject } from "./hooks/useProjects";
 
 const ProjectList = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const { projects } = useProject();
+
+  // const [projects, setProjects] = useState<Project[]>([]);
   const [totalData, setTotalData] = useState(0);
+  const [dataPerPage, setDataPerPage] = useState(0);
+
   const [isServerError, setIsServerError] = useState(false);
   // const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -68,7 +68,6 @@ const ProjectList = () => {
   const [isAsc, setIsAsc] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [dataPerPage, setDataPerPage] = useState(0);
   const page = searchParams.get("page") || 0;
   const perPage = searchParams.get("perPage") || "";
   const [isChangePage, setIsChangePage] = useState(false);
