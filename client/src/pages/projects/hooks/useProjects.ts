@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   ProjectQuery,
   ProjectListResponse,
@@ -15,6 +16,8 @@ export const useProject = ({
   const [projects, setProjects] = useState<Project[]>([]);
   const [totalData, setTotalData] = useState(0);
   const [dataPerPage, setDataPerPage] = useState(0);
+
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [isServerError, setIsServerError] = useState(false);
 
