@@ -25,7 +25,7 @@ namespace server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProjects([FromQuery] string? keyword, [FromQuery] string? orderBy, [FromQuery] int? page, [FromQuery] int? perPage)
         {
-            var filteredProjects =  _context.Projects.AsQueryable();
+               var filteredProjects =  _context.Projects.AsQueryable();
             int totalData = 0;
             int pageNumber = page ?? 1;
             int pageSize = perPage ?? 10;

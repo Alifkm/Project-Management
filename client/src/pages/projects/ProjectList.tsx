@@ -37,20 +37,12 @@ import {
 import { useProject } from "./hooks/useProjects";
 
 const ProjectList = () => {
-  const { projects } = useProject();
-
-  // const [projects, setProjects] = useState<Project[]>([]);
   const [totalData, setTotalData] = useState(0);
   const [dataPerPage, setDataPerPage] = useState(0);
 
   const [isServerError, setIsServerError] = useState(false);
   // const [isAddNewProjectShown, setAddNewProjectShown] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const keyword = searchParams.get("keyword") || "";
-  const [projectKeyword, setProjectKeyword] = useState(keyword);
-  const orderBy = searchParams.get("orderBy") || "";
-  const [projectOrderBy, setProjectOrderBy] = useState(orderBy);
-  const [isSorting, setIsSorting] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,19 +50,27 @@ const ProjectList = () => {
   const { id } = useParams();
   const isEditProjectShown = location.pathname.endsWith("/edit");
 
-  const [name, setName] = useState("");
+  // const [name, setName] = useState("");
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [assignee, setAssignee] = useState("");
 
+  const {
+    projects,
+    projectKeyword,
+    setProjectKeyword,
+    handleSearchClick,
+    handleClearSearchClick,
+    projectOrderBy,
+    OrderBy,
+    isAsc,
+    isSorting,
+    currentPage,
+    OnPageChange,
+    ChangePerPage,
+  } = useProject();
+
   const projectToEdit = projects.find((p) => p.id === Number(id));
-
-  const [isAsc, setIsAsc] = useState(true);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const page = searchParams.get("page") || 0;
-  const perPage = searchParams.get("perPage") || "";
-  const [isChangePage, setIsChangePage] = useState(false);
 
   const [formData, setFormData] = useState({
     name: projectToEdit?.name || "",
@@ -80,43 +80,6 @@ const ProjectList = () => {
     created_At: projectToEdit?.created_At || "",
     updated_At: projectToEdit?.updated_At || "",
   });
-
-  // Fetch projects when keyword in URL changes
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await GetProjects({
-          keyword,
-          orderBy,
-        });
-
-        setProjects(data.data);
-        setTotalData(data.totalData);
-        setDataPerPage(data.perPage);
-      } catch (error) {
-        setIsServerError(true);
-      }
-    };
-
-    fetchProjects();
-  }, [keyword, orderBy, projectOrderBy, location.pathname]);
-
-  const handleApplyClick = () => {
-    const params = Object.fromEntries(searchParams.entries());
-    if (projectKeyword) {
-      params.keyword = projectKeyword;
-    } else {
-      delete params.keyword;
-    }
-    setSearchParams(params);
-  };
-
-  const handleClearSearchClick = () => {
-    const params = Object.fromEntries(searchParams.entries());
-    delete params.keyword;
-    setSearchParams(params);
-    setProjectKeyword("");
-  };
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -205,77 +168,6 @@ const ProjectList = () => {
     }
   };
 
-  const OrderBy = async (column: String) => {
-    try {
-      if (isSorting) return;
-      setIsSorting(true);
-
-      if (column === "project") column = "name";
-      let order = "asc";
-
-      if (projectOrderBy.startsWith(column.toString())) {
-        order = projectOrderBy.endsWith("asc") ? "desc" : "asc";
-      }
-
-      setIsAsc(!isAsc);
-      order = isAsc ? "asc" : "desc";
-
-      const newOrderBy = `${column.toString()}:${order}`;
-
-      setProjectOrderBy(newOrderBy);
-
-      const params = Object.fromEntries(searchParams.entries());
-
-      params.orderBy = newOrderBy;
-      setSearchParams(params);
-
-      const data = await GetProjects({ keyword, orderBy: newOrderBy }); // call the API to order the project based on column name
-
-      setProjects(data.data);
-      setIsSorting(false);
-    } catch (error) {}
-  };
-
-  const OnPageChange = async (page: number) => {
-    try {
-      if (isChangePage) return;
-      setIsChangePage(true);
-      setCurrentPage(page);
-
-      const params = Object.fromEntries(searchParams.entries());
-      params.page = page.toString();
-      params.perPage = dataPerPage.toString();
-
-      setSearchParams(params);
-
-      const data = await GetProjects({ page: page, perPage: dataPerPage });
-
-      setProjects(data.data);
-
-      setIsChangePage(false);
-    } catch (error) {
-      setIsServerError(true);
-    }
-  };
-
-  const ChangePerPage = async (maxPerPage: number) => {
-    try {
-      setDataPerPage(maxPerPage);
-
-      const params = Object.fromEntries(searchParams.entries());
-      params.page = "1";
-      params.perPage = maxPerPage.toString();
-
-      setSearchParams(params);
-
-      const data = await GetProjects({ page: 1, perPage: maxPerPage });
-
-      setProjects(data.data);
-    } catch (error) {
-      setIsServerError(true);
-    }
-  };
-
   if (isServerError) {
     return <ServerError />;
   }
@@ -308,7 +200,7 @@ const ProjectList = () => {
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
               value={projectKeyword}
               onChange={(e) => setProjectKeyword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleApplyClick()}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchClick()}
             />
           </div>
 
@@ -316,7 +208,7 @@ const ProjectList = () => {
             text="Apply"
             background="bg-blue-600"
             textColor="text-white"
-            onClick={handleApplyClick}
+            onClick={handleSearchClick}
           />
           <Button
             text="Clear"
